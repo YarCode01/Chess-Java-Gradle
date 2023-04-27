@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>App.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">xxlchess_scaffold (1)</a> &gt; <a href="index.source.html" class="el_package">XXLChess</a> &gt; <span class="el_source">App.java</span></div><h1>App.java</h1><pre class="source lang-java linenums">package XXLChess;
+
+//import org.reflections.Reflections;
+//import org.reflections.scanners.Scanners;
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.data.JSONObject;
+import processing.data.JSONArray;
+import processing.core.PFont;
+import processing.event.MouseEvent;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.awt.Font;
+import java.io.*;
+import java.util.*;
+
+
+public class App extends PApplet {
+
+    public static final int SPRITESIZE = 480;
+    public static final int CELLSIZE = 48;
+    public static final int SIDEBAR = 120;
+    public static final int BOARD_WIDTH = 14;
+<span class="nc" id="L27">    public Cell[][] board = new Cell[14][14];</span>
+<span class="nc" id="L28">    private static int x_clicked=5;</span>
+<span class="nc" id="L29">    private static int y_clicked=5;</span>
+    private static int mouse_clicked_x;
+    private static int mouse_clicked_y;
+    private static int value;
+    private Cell selected_cell;
+    public static PImage b_rook, b_knight, b_pawn, b_archbishop, b_bishop, b_camel, b_amazon, b_chancellor, b_guard, b_queen, b_king, w_rook, w_knight, w_pawn, w_archbishop, w_bishop, w_camel, w_amazon, w_chancellor, w_guard, w_queen, w_king;
+<span class="nc" id="L35">    public static int WIDTH = CELLSIZE*BOARD_WIDTH+SIDEBAR;</span>
+<span class="nc" id="L36">    public static int HEIGHT = BOARD_WIDTH*CELLSIZE;</span>
+    public static int message;
+<span class="nc" id="L38">    public String message2 = &quot;asdf&quot;;</span>
+    public static final int FPS = 60;
+    private boolean click;
+    private boolean keyboard_pressed;
+    public PlayerColour turn;
+    public String configPath;
+
+<span class="nc" id="L45">    public App() {</span>
+<span class="nc" id="L46">        this.configPath = &quot;config.json&quot;;</span>
+<span class="nc" id="L47">    }</span>
+
+    /**
+     * Initialise the setting of the window size.
+    */
+    public void settings() {
+<span class="nc" id="L53">        size(WIDTH, HEIGHT);</span>
+<span class="nc" id="L54">    }</span>
+
+    /**
+     * Load all resources such as images. Initialise the elements such as the player, enemies and map elements.
+    */
+    public void LoadBoard(String Name_of_file){
+        try {
+<span class="nc" id="L61">            File f = new File(Name_of_file);</span>
+<span class="nc" id="L62">            Scanner scan = new Scanner(f);</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">            for(int j=0; j &lt; BOARD_WIDTH; j++){</span>
+<span class="nc" id="L64">                String line = scan.nextLine();</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">                for (int i = 0; i &lt; line.length(); i++) {</span>
+<span class="nc" id="L66">                    char name = line.charAt(i);</span>
+<span class="nc bnc" id="L67" title="All 23 branches missed.">                    switch (name){</span>
+                        case 'P' :
+<span class="nc" id="L69">                            board[i][j].setPiece(new Pawn(PlayerColour.BLACK, b_pawn, i, j));</span>
+<span class="nc" id="L70">                            break;</span>
+                        case 'R':
+<span class="nc" id="L72">                            this.board[i][j].setPiece(new Rook(PlayerColour.BLACK, b_rook, i, j));</span>
+<span class="nc" id="L73">                            break;</span>
+                        case 'N' :
+<span class="nc" id="L75">                            this.board[i][j].setPiece(new Knight(PlayerColour.BLACK, b_knight, i, j));</span>
+<span class="nc" id="L76">                            break;</span>
+                        case 'B' :
+<span class="nc" id="L78">                            this.board[i][j].setPiece(new Bishop(PlayerColour.BLACK, b_bishop, i, j));</span>
+<span class="nc" id="L79">                            break;</span>
+                        case 'H' :
+<span class="nc" id="L81">                            this.board[i][j].setPiece(new Archbishop(PlayerColour.BLACK, b_archbishop, i, j));</span>
+<span class="nc" id="L82">                            break;</span>
+                        case 'C' :
+<span class="nc" id="L84">                            this.board[i][j].setPiece(new Camel(PlayerColour.BLACK, b_camel, i, j));</span>
+<span class="nc" id="L85">                            break;</span>
+                        case 'G' :
+<span class="nc" id="L87">                            this.board[i][j].setPiece(new Guard(PlayerColour.BLACK, b_guard, i, j));</span>
+<span class="nc" id="L88">                            break;</span>
+                        case 'A' :
+<span class="nc" id="L90">                            this.board[i][j].setPiece(new Amazon(PlayerColour.BLACK, b_amazon, i, j));</span>
+<span class="nc" id="L91">                            break;</span>
+                        case 'K' :
+<span class="nc" id="L93">                            this.board[i][j].setPiece(new King(PlayerColour.BLACK, b_king, i, j));</span>
+<span class="nc" id="L94">                            break;</span>
+                        case 'E' :
+<span class="nc" id="L96">                            this.board[i][j].setPiece(new Chancellor(PlayerColour.BLACK, b_chancellor, i, j));</span>
+<span class="nc" id="L97">                            break;</span>
+                        case 'Q' :
+<span class="nc" id="L99">                            this.board[i][j].setPiece(new Queen(PlayerColour.BLACK, b_queen, i, j));</span>
+<span class="nc" id="L100">                            break;</span>
+                        case 'p' :
+<span class="nc" id="L102">                            board[i][j].setPiece(new Pawn(PlayerColour.WHITE, w_pawn, i, j));</span>
+<span class="nc" id="L103">                            break;</span>
+                        case 'r':
+<span class="nc" id="L105">                            this.board[i][j].setPiece(new Rook(PlayerColour.WHITE, w_rook, i, j));</span>
+<span class="nc" id="L106">                            break;</span>
+                        case 'n' :
+<span class="nc" id="L108">                            this.board[i][j].setPiece(new Knight(PlayerColour.WHITE, w_knight, i, j));</span>
+<span class="nc" id="L109">                            break;</span>
+                        case 'b' :
+<span class="nc" id="L111">                            this.board[i][j].setPiece(new Bishop(PlayerColour.WHITE, w_bishop, i, j));</span>
+<span class="nc" id="L112">                            break;</span>
+                        case 'h' :
+<span class="nc" id="L114">                            this.board[i][j].setPiece(new Archbishop(PlayerColour.WHITE, w_archbishop, i, j));</span>
+<span class="nc" id="L115">                            break;</span>
+                        case 'c' :
+<span class="nc" id="L117">                            this.board[i][j].setPiece(new Camel(PlayerColour.WHITE, w_camel, i, j));</span>
+<span class="nc" id="L118">                            break;</span>
+                        case 'g' :
+<span class="nc" id="L120">                            this.board[i][j].setPiece(new Guard(PlayerColour.WHITE, w_guard, i, j));</span>
+<span class="nc" id="L121">                            break;</span>
+                        case 'a' :
+<span class="nc" id="L123">                            this.board[i][j].setPiece(new Amazon(PlayerColour.WHITE, w_amazon, i, j));</span>
+<span class="nc" id="L124">                            break;</span>
+                        case 'k' :
+<span class="nc" id="L126">                            this.board[i][j].setPiece(new King(PlayerColour.WHITE, w_king, i, j));</span>
+<span class="nc" id="L127">                            break;</span>
+                        case 'e' :
+<span class="nc" id="L129">                            this.board[i][j].setPiece(new Chancellor(PlayerColour.WHITE, w_chancellor, i, j));</span>
+<span class="nc" id="L130">                            break;</span>
+                        case 'q' :
+<span class="nc" id="L132">                            this.board[i][j].setPiece(new Queen(PlayerColour.WHITE, w_queen, i, j));</span>
+                            break;
+                        
+                    }
+                }
+            }
+<span class="nc" id="L138">        } catch(FileNotFoundException e){</span>
+<span class="nc" id="L139">            e.printStackTrace();</span>
+<span class="nc" id="L140">        }</span>
+        
+<span class="nc" id="L142">    }</span>
+    public void setup() {
+<span class="nc" id="L144">        frameRate(FPS);</span>
+
+        // Load images during setup
+        
+<span class="nc" id="L148">        b_pawn = loadImage(&quot;src/main/resources/XXLChess/b-pawn.png&quot;);</span>
+<span class="nc" id="L149">        b_rook = loadImage(&quot;src/main/resources/XXLChess/b-rook.png&quot;);</span>
+<span class="nc" id="L150">        b_knight = loadImage(&quot;src/main/resources/XXLChess/b-knight.png&quot;);</span>
+<span class="nc" id="L151">        b_bishop = loadImage(&quot;src/main/resources/XXLChess/b-bishop.png&quot;);</span>
+<span class="nc" id="L152">        b_guard = loadImage(&quot;src/main/resources/XXLChess/b-knight-king.png&quot;);</span>
+<span class="nc" id="L153">        b_queen = loadImage(&quot;src/main/resources/XXLChess/b-queen.png&quot;);</span>
+<span class="nc" id="L154">        b_archbishop = loadImage(&quot;src/main/resources/XXLChess/b-archbishop.png&quot;);</span>
+<span class="nc" id="L155">        b_camel = loadImage(&quot;src/main/resources/XXLChess/b-camel.png&quot;);</span>
+<span class="nc" id="L156">        b_amazon = loadImage(&quot;src/main/resources/XXLChess/b-amazon.png&quot;);</span>
+<span class="nc" id="L157">        b_king = loadImage(&quot;src/main/resources/XXLChess/b-king.png&quot;);</span>
+<span class="nc" id="L158">        b_chancellor = loadImage(&quot;src/main/resources/XXLChess/b-chancellor.png&quot;);</span>
+
+<span class="nc" id="L160">        w_pawn = loadImage(&quot;src/main/resources/XXLChess/w-pawn.png&quot;);</span>
+<span class="nc" id="L161">        w_rook = loadImage(&quot;src/main/resources/XXLChess/w-rook.png&quot;);</span>
+<span class="nc" id="L162">        w_knight = loadImage(&quot;src/main/resources/XXLChess/w-knight.png&quot;);</span>
+<span class="nc" id="L163">        w_bishop = loadImage(&quot;src/main/resources/XXLChess/w-bishop.png&quot;);</span>
+<span class="nc" id="L164">        w_guard = loadImage(&quot;src/main/resources/XXLChess/w-knight-king.png&quot;);</span>
+<span class="nc" id="L165">        w_queen = loadImage(&quot;src/main/resources/XXLChess/w-queen.png&quot;);</span>
+<span class="nc" id="L166">        w_archbishop = loadImage(&quot;src/main/resources/XXLChess/w-archbishop.png&quot;);</span>
+<span class="nc" id="L167">        w_camel = loadImage(&quot;src/main/resources/XXLChess/w-camel.png&quot;);</span>
+<span class="nc" id="L168">        w_amazon = loadImage(&quot;src/main/resources/XXLChess/w-amazon.png&quot;);</span>
+<span class="nc" id="L169">        w_king = loadImage(&quot;src/main/resources/XXLChess/w-king.png&quot;);</span>
+<span class="nc" id="L170">        w_chancellor = loadImage(&quot;src/main/resources/XXLChess/w-chancellor.png&quot;);</span>
+        
+
+
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        for(int i = 0; i &lt; BOARD_WIDTH; i++){</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">            for(int j = 0; j &lt; BOARD_WIDTH; j++){</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">                if ((i+j)%2 == 0) this.board[i][j] = new Cell(CellColour.LIGHT_BROWN);</span>
+<span class="nc" id="L177">                else this.board[i][j] = new Cell(CellColour.DARK_BROWN);</span>
+            }
+        }
+<span class="nc" id="L180">        LoadBoard(&quot;/Users/yaraslauivashynka/Downloads/xxlchess_scaffold (1)/level1.txt&quot;);</span>
+
+
+<span class="nc" id="L183">        turn = PlayerColour.WHITE;</span>
+		// load config
+<span class="nc" id="L185">        JSONObject conf = loadJSONObject(new File(this.configPath));</span>
+        
+<span class="nc" id="L187">    }</span>
+
+    /**
+     * Receive key pressed signal from the keyboard.
+    */
+    @Override
+    public void keyPressed() {
+<span class="nc bnc" id="L194" title="All 2 branches missed.">        if (key == 'r'){</span>
+<span class="nc" id="L195">            setup();</span>
+        }
+<span class="nc" id="L197">    }</span>
+    
+    public void keyReleased(){
+
+<span class="nc" id="L201">    }</span>
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+<span class="nc" id="L205">            x_clicked = e.getX()/CELLSIZE;</span>
+<span class="nc" id="L206">            y_clicked = e.getY()/CELLSIZE;</span>
+<span class="nc" id="L207">            click = true;</span>
+<span class="nc" id="L208">    }</span>
+
+    @Override
+    public void mouseDragged(MouseEvent e){ 
+
+<span class="nc" id="L213">    }</span>
+
+    /**
+     * Draw all elements in the game by current frame. 
+    */
+    public void draw() {
+<span class="nc" id="L219">        background(169,169,169);</span>
+<span class="nc" id="L220">        draw_board();</span>
+
+<span class="nc" id="L222">        textSize(40);</span>
+<span class="nc" id="L223">        text(message, 670, 400);</span>
+<span class="nc" id="L224">        text(message2, 670, 500);</span>
+<span class="nc" id="L225">        AI ai = new AI(this, PlayerColour.BLACK);</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">        if(turn == PlayerColour.BLACK){</span>
+            // if (this.isCheck()){
+            //     int[] position = getKing(turn).getPosition();
+            //     board[position[0]][position[1]].setColour(CellColour.RED);
+            // }
+            // else{
+            //     ai.move(this);
+            //     ChangeTurn();
+            // }
+<span class="nc" id="L235">            ai.move(this);</span>
+<span class="nc" id="L236">            ChangeTurn();</span>
+        }
+        else{
+<span class="nc bnc" id="L239" title="All 2 branches missed.">            if (click){</span>
+<span class="nc" id="L240">                text(x_clicked + &quot; &quot; + y_clicked, 700, 360);</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">                if(board[x_clicked][y_clicked].getPiece() != null </span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">                &amp;&amp; board[x_clicked][y_clicked].getPiece().getColour() == turn){</span>
+<span class="nc" id="L243">                    selected_cell = board[x_clicked][y_clicked];</span>
+<span class="nc" id="L244">                    reset_colour();</span>
+<span class="nc" id="L245">                    select_current_piece(x_clicked,y_clicked);</span>
+<span class="nc" id="L246">                    ArrayList&lt;int[]&gt; illegal_moves = board[x_clicked][y_clicked].getPiece().getIllegalMoves(this);</span>
+<span class="nc" id="L247">                    board[x_clicked][y_clicked].getPiece().select(this);</span>
+<span class="nc" id="L248">                    deselectIllegalMoves(illegal_moves);</span>
+<span class="nc" id="L249">                }</span>
+<span class="nc bnc" id="L250" title="All 6 branches missed.">                else if(board[x_clicked][y_clicked].getColour() == CellColour.LIGHT_BLUE || board[x_clicked][y_clicked].getColour() == CellColour.DARK_BLUE || board[x_clicked][y_clicked].getColour() == CellColour.ORANGE){    </span>
+<span class="nc" id="L251">                        selected_cell.getPiece().move(this, x_clicked, y_clicked);</span>
+<span class="nc" id="L252">                        reset_colour();</span>
+<span class="nc" id="L253">                        ChangeTurn();</span>
+<span class="nc" id="L254">                        selected_cell = null;</span>
+                    }
+                }
+<span class="nc" id="L257">            click = false;</span>
+        }   
+
+<span class="nc" id="L260">    }</span>
+    public ChessPiece getKing(Cell[][] board, PlayerColour colour){
+<span class="nc bnc" id="L262" title="All 2 branches missed.">        for(int i = 0; i &lt; BOARD_WIDTH; i++){</span>
+<span class="nc bnc" id="L263" title="All 2 branches missed.">            for(int j = 0; j &lt; BOARD_WIDTH; j++){</span>
+<span class="nc" id="L264">                ChessPiece piece = board[i][j].getPiece();</span>
+<span class="nc bnc" id="L265" title="All 4 branches missed.">                if((piece instanceof King) &amp;&amp; (piece.getColour() == colour))</span>
+<span class="nc" id="L266">                    return board[i][j].getPiece();</span>
+            }
+        }
+<span class="nc" id="L269">        return null;</span>
+    }
+
+    public ChessPiece getKing(PlayerColour colour){
+<span class="nc" id="L273">        return getKing(this.board, colour);</span>
+    }
+    public boolean isCheck(){
+<span class="nc" id="L276">        ChessPiece king = getKing(board, turn);</span>
+        ArrayList&lt;ChessPiece&gt; opposite_pieces;
+<span class="nc bnc" id="L278" title="All 2 branches missed.">        if (turn == PlayerColour.WHITE){</span>
+<span class="nc" id="L279">            opposite_pieces = getPieces(board, PlayerColour.BLACK);</span>
+        }
+        else {
+<span class="nc" id="L282">            opposite_pieces = getPieces(board, PlayerColour.WHITE);</span>
+        }
+<span class="nc" id="L284">        int[] king_position = king.getPosition();</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">        for(ChessPiece piece : opposite_pieces){</span>
+<span class="nc" id="L286">            ArrayList&lt;int[]&gt; moves = piece.getAvailableCaptures(this);</span>
+<span class="nc bnc" id="L287" title="All 2 branches missed.">            for(int[] move : moves){</span>
+<span class="nc bnc" id="L288" title="All 4 branches missed.">                if (move[0] == king_position[0] &amp;&amp; move[1] == king_position[1]) return true;</span>
+<span class="nc" id="L289">            }</span>
+<span class="nc" id="L290">        }</span>
+<span class="nc" id="L291">        return false;</span>
+    }
+
+    public ArrayList&lt;ChessPiece&gt; getPieces(PlayerColour colour){ 
+<span class="nc" id="L295">        return getPieces(this.board, colour);</span>
+    }
+
+    public ArrayList&lt;ChessPiece&gt; getPieces(Cell[][] board, PlayerColour colour){
+<span class="nc" id="L299">        ArrayList&lt;ChessPiece&gt; pieces = new ArrayList&lt;ChessPiece&gt;();</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">        for(int i = 0; i &lt; BOARD_WIDTH; i++){</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">            for(int j = 0; j &lt; BOARD_WIDTH; j++){</span>
+<span class="nc bnc" id="L302" title="All 4 branches missed.">                if(board[i][j].getPiece() != null &amp;&amp; board[i][j].getPiece().getColour() == colour){</span>
+<span class="nc" id="L303">                    ChessPiece piece = board[i][j].getPiece();</span>
+<span class="nc" id="L304">                    pieces.add(piece);</span>
+                }
+            }
+        }
+<span class="nc" id="L308">        return pieces;</span>
+    }
+    public boolean isLegalMove(int old_x, int old_y, int new_x, int new_y){
+<span class="nc" id="L311">        ChessPiece piece = board[old_x][old_y].getPiece();</span>
+<span class="nc" id="L312">        boolean legal = true;</span>
+<span class="nc" id="L313">        Cell original_cell = new Cell(board[new_x][new_y].getColour(), board[new_x][new_y].getPiece());</span>
+<span class="nc" id="L314">        this.board[old_x][old_y].setPiece(null);</span>
+<span class="nc" id="L315">        this.board[new_x][new_y].setPiece(piece);</span>
+<span class="nc" id="L316">        piece.setPosition(new_x,new_y);</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">        if (isCheck()){</span>
+<span class="nc" id="L318">            legal = false;</span>
+        }
+<span class="nc" id="L320">        this.board[old_x][old_y].setPiece(piece);</span>
+<span class="nc" id="L321">        this.board[new_x][new_y] = original_cell;</span>
+<span class="nc" id="L322">        piece.setPosition(old_x, old_y);</span>
+<span class="nc" id="L323">        return legal;</span>
+    }
+
+    public void reset_colour(){
+<span class="nc bnc" id="L327" title="All 2 branches missed.">        for(int i = 0; i &lt; BOARD_WIDTH; i++){</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">            for(int j = 0; j &lt; BOARD_WIDTH; j++){</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">                if(board[i][j].getColour() != CellColour.YELLOW){</span>
+<span class="nc bnc" id="L330" title="All 2 branches missed.">                    if ((i+j)%2 == 0) this.board[i][j].setColour(CellColour.LIGHT_BROWN);</span>
+<span class="nc" id="L331">                    else this.board[i][j].setColour(CellColour.DARK_BROWN);</span>
+                }
+            }
+        }
+<span class="nc" id="L335">    }</span>
+    public void deselectIllegalMoves(ArrayList&lt;int[]&gt; illegal_moves){
+<span class="nc bnc" id="L337" title="All 2 branches missed.">        for(int[] move : illegal_moves){</span>
+<span class="nc bnc" id="L338" title="All 2 branches missed.">            if((move[0] + move[1])%2 == 0) board[move[0]][move[1]].setColour(CellColour.LIGHT_BROWN);</span>
+<span class="nc" id="L339">            else board[move[0]][move[1]].setColour(CellColour.DARK_BROWN);</span>
+<span class="nc" id="L340">        }</span>
+<span class="nc" id="L341">    }</span>
+    public void reset_last_move(){
+<span class="nc bnc" id="L343" title="All 2 branches missed.">        for(int i = 0; i &lt; BOARD_WIDTH; i++){</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">            for(int j = 0; j &lt; BOARD_WIDTH; j++){</span>
+<span class="nc bnc" id="L345" title="All 2 branches missed.">                if(board[i][j].getColour() == CellColour.YELLOW){</span>
+<span class="nc bnc" id="L346" title="All 2 branches missed.">                    if ((i+j)%2 == 0) this.board[i][j].setColour(CellColour.LIGHT_BROWN);</span>
+<span class="nc" id="L347">                    else this.board[i][j].setColour(CellColour.DARK_BROWN);</span>
+                }
+            }
+        }
+<span class="nc" id="L351">    }</span>
+
+    private void draw_board(){
+<span class="nc bnc" id="L354" title="All 2 branches missed.">        for(int i = 0; i &lt; BOARD_WIDTH; i++){</span>
+<span class="nc bnc" id="L355" title="All 2 branches missed.">            for(int j = 0; j &lt; BOARD_WIDTH; j++){</span>
+<span class="nc" id="L356">                fill(this.board[i][j].getColour().R,this.board[i][j].getColour().G,this.board[i][j].getColour().B);</span>
+<span class="nc" id="L357">                this.rect(i*CELLSIZE, j*CELLSIZE, CELLSIZE, CELLSIZE);</span>
+<span class="nc bnc" id="L358" title="All 2 branches missed.">                if(this.board[i][j].getPiece() != null){</span>
+<span class="nc" id="L359">                    this.board[i][j].getPiece().draw(this);</span>
+                }
+            }
+        }
+<span class="nc" id="L363">    }</span>
+    public void select_current_piece(int x, int y){
+<span class="nc" id="L365">        board[x][y].setColour(CellColour.GREEN);</span>
+<span class="nc" id="L366">    }</span>
+
+    public void select_free_cell(ArrayList&lt;int[]&gt; available_moves){
+<span class="nc bnc" id="L369" title="All 2 branches missed.">        for(int[] move : available_moves){</span>
+<span class="nc" id="L370">            this.select_free_cell(move[0], move[1]);</span>
+<span class="nc" id="L371">        }</span>
+<span class="nc" id="L372">    }</span>
+
+    public void select_free_cell(int x, int y){
+<span class="nc bnc" id="L375" title="All 2 branches missed.">        if((x+y)%2 == 0){</span>
+<span class="nc" id="L376">            board[x][y].setColour(CellColour.LIGHT_BLUE);</span>
+        }
+<span class="nc" id="L378">        else board[x][y].setColour(CellColour.DARK_BLUE);</span>
+<span class="nc" id="L379">    }</span>
+
+    public void select_move(int old_x, int old_y, int new_x, int new_y){
+<span class="nc" id="L382">        board[old_x][old_y].setColour(CellColour.YELLOW);</span>
+<span class="nc" id="L383">        board[new_x][new_y].setColour(CellColour.YELLOW);</span>
+<span class="nc" id="L384">    }</span>
+
+
+    public void select_occupied_cell(int x, int y){
+<span class="nc" id="L388">        board[x][y].setColour(CellColour.ORANGE);</span>
+<span class="nc" id="L389">    }</span>
+
+    public void select_occupied_cell(ArrayList&lt;int[]&gt; available_moves){
+<span class="nc bnc" id="L392" title="All 2 branches missed.">        for(int[] move : available_moves){</span>
+<span class="nc" id="L393">            this.select_occupied_cell(move[0], move[1]);</span>
+<span class="nc" id="L394">        }</span>
+<span class="nc" id="L395">    }</span>
+    
+    public boolean occupied_by_enemy(ChessPiece piece, int x, int y){
+<span class="nc bnc" id="L398" title="All 12 branches missed.">        if (y &lt; BOARD_WIDTH &amp;&amp; y &gt;= 0 &amp;&amp; x &lt; BOARD_WIDTH &amp;&amp; x &gt;= 0 &amp;&amp;board[x][y].getPiece() != null &amp;&amp; board[x][y].getPiece().getColour() != piece.getColour()) return true;</span>
+<span class="nc" id="L399">        else return false;</span>
+    }
+    public boolean cell_available(int x, int y){
+<span class="nc bnc" id="L402" title="All 10 branches missed.">        if (y &lt; BOARD_WIDTH &amp;&amp; y &gt;= 0 &amp;&amp; x &lt; BOARD_WIDTH &amp;&amp; x &gt;= 0 &amp;&amp; board[x][y].getPiece() == null)</span>
+<span class="nc" id="L403">            return true;</span>
+<span class="nc" id="L404">        return false;</span>
+    }
+
+    public void ChangeTurn(){
+<span class="nc bnc" id="L408" title="All 2 branches missed.">        if(this.turn == PlayerColour.WHITE) this.turn = PlayerColour.BLACK;</span>
+<span class="nc" id="L409">        else this.turn = PlayerColour.WHITE;</span>
+<span class="nc" id="L410">    }</span>
+
+	
+	// Add any additional methods or attributes you want. Please put classes in different files.
+
+
+    public static void main(String[] args) {
+<span class="nc" id="L417">        PApplet.main(&quot;XXLChess.App&quot;);</span>
+<span class="nc" id="L418">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

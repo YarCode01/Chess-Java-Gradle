@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChessPiece.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">xxlchess_scaffold (1)</a> &gt; <a href="index.source.html" class="el_package">XXLChess</a> &gt; <span class="el_source">ChessPiece.java</span></div><h1>ChessPiece.java</h1><pre class="source lang-java linenums">package XXLChess;
+
+import java.util.Random;
+import java.util.ArrayList; 
+import processing.core.PImage;
+
+
+public abstract class ChessPiece {
+    protected int x;
+    protected int y;
+    protected PlayerColour colour;
+    protected double value;
+    protected PImage pieceSprite;
+    protected boolean selected;
+
+<span class="nc" id="L16">    public ChessPiece(PlayerColour colour, PImage pieceSprite, int x, int y, double value){</span>
+<span class="nc" id="L17">        this.pieceSprite = pieceSprite;</span>
+<span class="nc" id="L18">        this.x = x;</span>
+<span class="nc" id="L19">        this.y = y;</span>
+<span class="nc" id="L20">        this.value = value;</span>
+<span class="nc" id="L21">        this.colour = colour;</span>
+<span class="nc" id="L22">    }</span>
+
+    public int[] getPosition(){
+<span class="nc" id="L25">        int[] arr = {this.x, this.y};</span>
+<span class="nc" id="L26">        return arr;</span>
+    }
+    public abstract ArrayList&lt;int[]&gt; getAvailableMoves(App app);
+
+    public ArrayList&lt;int[]&gt; getAvailableCaptures(App app){
+<span class="nc" id="L31">        ArrayList&lt;int[]&gt; available_captures = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc" id="L32">        ArrayList&lt;int[]&gt; available_moves = this.getAvailableMoves(app);</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">        for(int[] move: available_moves){</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">            if (app.occupied_by_enemy(this, move[0], move[1])){</span>
+<span class="nc" id="L35">                available_captures.add(new int[] {move[0], move[1]});</span>
+            }
+<span class="nc" id="L37">        }</span>
+<span class="nc" id="L38">        return available_captures;</span>
+    }
+
+    public void select(App app){
+        
+<span class="nc" id="L43">        ArrayList&lt;int[]&gt; available_moves = this.getAvailableMoves(app);</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        for(int[] move : available_moves){</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">            if (app.cell_available(move[0], move[1])) app.select_free_cell(move[0], move[1]);</span>
+<span class="nc" id="L46">            else app.select_occupied_cell(move[0], move[1]);</span>
+<span class="nc" id="L47">        }</span>
+<span class="nc" id="L48">    }</span>
+
+
+    public void move(App app, int new_x, int new_y){
+<span class="nc" id="L52">        app.board[this.x][this.y].setPiece(null);</span>
+<span class="nc" id="L53">        app.board[new_x][new_y].setPiece(this);</span>
+<span class="nc" id="L54">        this.x = new_x;</span>
+<span class="nc" id="L55">        this.y = new_y;</span>
+<span class="nc" id="L56">    }</span>
+
+    public void take(int new_x, int new_y){
+<span class="nc" id="L59">    }</span>
+
+    public void setPosition(int x, int y){
+<span class="nc" id="L62">        this.x = x;</span>
+<span class="nc" id="L63">        this.y = y;</span>
+<span class="nc" id="L64">    }</span>
+
+    public PlayerColour getColour(){
+<span class="nc" id="L67">        return this.colour;</span>
+    }
+
+    public double getValue(){
+<span class="nc" id="L71">        return this.value;</span>
+    }
+
+    public void draw(App app){
+<span class="nc bnc" id="L75" title="All 4 branches missed.">        if (pieceSprite.width != App.CELLSIZE &amp;&amp; pieceSprite.height != App.CELLSIZE){</span>
+<span class="nc" id="L76">            pieceSprite.resize(App.CELLSIZE, App.CELLSIZE);</span>
+        }
+<span class="nc" id="L78">        app.image(pieceSprite, x*app.CELLSIZE, y*app.CELLSIZE);</span>
+<span class="nc" id="L79">    }</span>
+
+
+    protected ArrayList&lt;int[]&gt; getMovesRow(App app){
+<span class="nc" id="L83">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        for(int curr_x = this.x+1; curr_x &lt; app.BOARD_WIDTH; curr_x++){</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">            if (app.cell_available(curr_x, this.y)){</span>
+<span class="nc" id="L86">                available_moves.add(new int[] {curr_x, this.y});</span>
+            }
+<span class="nc bnc" id="L88" title="All 2 branches missed.">            else if(app.occupied_by_enemy(this, curr_x, this.y)){</span>
+<span class="nc" id="L89">                available_moves.add(new int[] {curr_x, this.y});</span>
+<span class="nc" id="L90">                break;</span>
+            }
+            else break;
+        }
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        for(int curr_x = this.x-1; curr_x &gt;= 0; curr_x--){</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">            if (app.cell_available(curr_x, this.y)){</span>
+<span class="nc" id="L96">                available_moves.add(new int[] {curr_x, this.y});</span>
+            }
+<span class="nc bnc" id="L98" title="All 2 branches missed.">            else if(app.occupied_by_enemy(this, curr_x, this.y)){</span>
+<span class="nc" id="L99">                available_moves.add(new int[] {curr_x, this.y});</span>
+<span class="nc" id="L100">                break;</span>
+            }
+            else break;
+        }
+<span class="nc" id="L104">        return available_moves;</span>
+    }
+
+    protected ArrayList&lt;int[]&gt; getMovesColumn(App app){
+<span class="nc" id="L108">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        for(int curr_y = this.y+1; curr_y &lt; app.BOARD_WIDTH; curr_y++){</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">            if (app.cell_available(this.x, curr_y)){</span>
+<span class="nc" id="L111">                available_moves.add(new int[] {this.x, curr_y});</span>
+            }
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            else if(app.occupied_by_enemy(this, this.x, curr_y)){</span>
+<span class="nc" id="L114">                available_moves.add(new int[] {this.x, curr_y});</span>
+<span class="nc" id="L115">                break;</span>
+            }
+            else break;
+        }
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        for(int curr_y = this.y-1; curr_y &gt;= 0; curr_y--){</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">            if (app.cell_available(this.x, curr_y)){</span>
+<span class="nc" id="L121">                available_moves.add(new int[] {this.x, curr_y});</span>
+            }
+<span class="nc bnc" id="L123" title="All 2 branches missed.">            else if(app.occupied_by_enemy(this, this.x, curr_y)){</span>
+<span class="nc" id="L124">                available_moves.add(new int[] {this.x, curr_y});</span>
+<span class="nc" id="L125">                break;</span>
+            }
+            else break;
+        }
+<span class="nc" id="L129">        return available_moves;</span>
+    }
+
+    protected ArrayList&lt;int[]&gt; getMovesDiagonals(App app){
+<span class="nc" id="L133">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">        for(int i = 1; i &lt;= app.BOARD_WIDTH; i++){</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">            if (app.cell_available(this.x + i, this.y + i)){</span>
+<span class="nc" id="L136">                available_moves.add(new int[] {this.x + i, this.y + i});</span>
+            }
+<span class="nc bnc" id="L138" title="All 2 branches missed.">            else if(app.occupied_by_enemy(this, this.x + i, this.y + i)){</span>
+<span class="nc" id="L139">                available_moves.add(new int[] {this.x + i, this.y + i});</span>
+<span class="nc" id="L140">                break;</span>
+            }
+            else
+                break;
+        }
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        for(int i = 1; i &lt;= app.BOARD_WIDTH; i++){</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">            if (app.cell_available(this.x - i, this.y + i)){</span>
+<span class="nc" id="L147">                available_moves.add(new int[]{this.x - i, this.y + i});</span>
+            }
+<span class="nc bnc" id="L149" title="All 2 branches missed.">            else if(app.occupied_by_enemy(this, this.x - i, this.y + i)){</span>
+<span class="nc" id="L150">                available_moves.add(new int[] {this.x - i, this.y + i});</span>
+<span class="nc" id="L151">                break;</span>
+            }
+            else
+                break;
+        }
+<span class="nc bnc" id="L156" title="All 2 branches missed.">        for(int i = 1; i &lt;= app.BOARD_WIDTH; i++){</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">            if (app.cell_available(this.x + i, this.y - i)){</span>
+<span class="nc" id="L158">                available_moves.add(new int[] {this.x + i, this.y - i});</span>
+            }
+<span class="nc bnc" id="L160" title="All 2 branches missed.">            else if(app.occupied_by_enemy(this, this.x + i, this.y - i)){</span>
+<span class="nc" id="L161">                available_moves.add(new int[] {this.x + i, this.y - i});</span>
+<span class="nc" id="L162">                break;</span>
+            }
+            else
+                break;
+        }
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        for(int i = 1; i &lt;= app.BOARD_WIDTH; i++){</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">            if (app.cell_available(this.x - i, this.y - i)){</span>
+<span class="nc" id="L169">                available_moves.add(new int[] {this.x - i, this.y - i});</span>
+            }
+<span class="nc bnc" id="L171" title="All 2 branches missed.">            else if(app.occupied_by_enemy(this, this.x - i, this.y - i)){</span>
+<span class="nc" id="L172">                available_moves.add(new int[] {this.x - i, this.y - i});</span>
+<span class="nc" id="L173">                break;</span>
+            }
+            else break;
+        }
+<span class="nc" id="L177">        return available_moves;</span>
+    }
+    protected ArrayList&lt;int[]&gt; getSpecialMoves(App app, int[][] possible_moves){
+<span class="nc" id="L180">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">        for (int i = 0; i &lt; possible_moves.length; i++){</span>
+<span class="nc" id="L182">            int curr_x = this.x + possible_moves[i][0];</span>
+<span class="nc" id="L183">            int curr_y = this.y + possible_moves[i][1];</span>
+<span class="nc bnc" id="L184" title="All 4 branches missed.">            if (app.cell_available(curr_x, curr_y) || app.occupied_by_enemy(this, curr_x, curr_y)){</span>
+<span class="nc" id="L185">                available_moves.add(new int[] {curr_x, curr_y});</span>
+            }
+        }
+<span class="nc" id="L188">        return available_moves;</span>
+    }
+
+    public ArrayList&lt;int[]&gt; getIllegalMoves(App app){
+<span class="nc" id="L192">        ArrayList&lt;int[]&gt; illegal_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc" id="L193">        ArrayList&lt;int[]&gt; available_moves = this.getAvailableMoves(app);</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">        for (int[] move : available_moves){</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">            if(!app.isLegalMove(this.x, this.y, move[0], move[1])) illegal_moves.add(move);</span>
+<span class="nc" id="L196">        }</span>
+<span class="nc" id="L197">        return illegal_moves;</span>
+    }
+
+}
+
+class Pawn extends ChessPiece{
+
+    public Pawn(PlayerColour colour, PImage pieceSprite, int x, int y){
+<span class="nc" id="L205">        super(colour, pieceSprite, x, y, 1);</span>
+<span class="nc" id="L206">    }</span>
+
+    public void move(App app, int new_x, int new_y){
+<span class="nc" id="L209">        app.board[this.x][this.y].setPiece(null);</span>
+<span class="nc bnc" id="L210" title="All 4 branches missed.">        if(new_y == App.BOARD_WIDTH - 8 &amp;&amp; this.colour == PlayerColour.WHITE){</span>
+<span class="nc" id="L211">            app.board[new_x][new_y].setPiece(new Queen(PlayerColour.WHITE, App.w_queen, new_x, new_y));</span>
+        }
+<span class="nc bnc" id="L213" title="All 4 branches missed.">        else if(new_y == 7 &amp;&amp; this.colour == PlayerColour.BLACK){</span>
+<span class="nc" id="L214">            app.board[new_x][new_y].setPiece(new Queen(PlayerColour.BLACK, App.b_queen, new_x, new_y));</span>
+        }
+        else{
+<span class="nc" id="L217">            this.x = new_x;</span>
+<span class="nc" id="L218">            this.y = new_y;</span>
+<span class="nc" id="L219">            app.board[new_x][new_y].setPiece(this);</span>
+        }
+<span class="nc" id="L221">    }</span>
+    
+    public ArrayList&lt;int[]&gt; getAvailableMoves(App app){
+        int direction;
+<span class="nc" id="L225">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">        if (this.colour == PlayerColour.BLACK) direction = 1;</span>
+<span class="nc" id="L227">            else direction = -1;</span>
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        if (app.cell_available(x, y+1*direction)){</span>
+<span class="nc" id="L229">            available_moves.add(new int[] {this.x,this.y+1*direction});</span>
+<span class="nc bnc" id="L230" title="All 6 branches missed.">            if((this.y == 1 || this.y == 12) &amp;&amp; (app.cell_available(this.x,this.y+2*direction))){</span>
+<span class="nc" id="L231">                available_moves.add(new int[] {this.x,this.y+2*direction});</span>
+            }
+        }
+<span class="nc bnc" id="L234" title="All 2 branches missed.">        if (app.occupied_by_enemy(this, x+1, y+1*direction)){</span>
+<span class="nc" id="L235">            available_moves.add(new int[] {x+1, y+1*direction});</span>
+        }
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        if (app.occupied_by_enemy(this, x-1, y+1*direction)){</span>
+<span class="nc" id="L238">            available_moves.add(new int[] {x-1, y+1*direction});</span>
+        }
+<span class="nc" id="L240">        return available_moves;</span>
+    }
+
+
+}
+
+class Rook extends ChessPiece{
+
+    public Rook(PlayerColour colour, PImage pieceSprite, int x, int y){
+<span class="nc" id="L249">        super(colour, pieceSprite, x, y, 5.25);</span>
+<span class="nc" id="L250">    }</span>
+
+    public ArrayList&lt;int[]&gt; getAvailableMoves(App app){
+<span class="nc" id="L253">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc" id="L254">        available_moves.addAll(this.getMovesRow(app));</span>
+<span class="nc" id="L255">        available_moves.addAll(this.getMovesColumn(app));</span>
+<span class="nc" id="L256">        return available_moves;</span>
+    }
+}
+
+
+class Bishop extends ChessPiece{
+    public Bishop(PlayerColour colour, PImage pieceSprite, int x, int y){
+<span class="nc" id="L263">        super(colour, pieceSprite, x, y, 3.625);</span>
+<span class="nc" id="L264">    }</span>
+    public ArrayList&lt;int[]&gt; getAvailableMoves(App app){
+<span class="nc" id="L266">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc" id="L267">        available_moves.addAll(this.getMovesDiagonals(app));</span>
+<span class="nc" id="L268">        return available_moves;</span>
+    }
+}
+
+class Knight extends ChessPiece{ 
+<span class="nc" id="L273">    public static final int[][] possible_moves = {{2,1},{-2,1},{-2,-1},{2,-1},{1,2},{-1,2},{-1,-2},{1,-2}};</span>
+    public Knight(PlayerColour colour, PImage pieceSprite, int x, int y){
+<span class="nc" id="L275">        super(colour, pieceSprite, x, y, 2);</span>
+<span class="nc" id="L276">    }</span>
+    public ArrayList&lt;int[]&gt; getAvailableMoves(App app){
+<span class="nc" id="L278">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc" id="L279">        available_moves.addAll(this.getSpecialMoves(app, possible_moves));</span>
+<span class="nc" id="L280">        return available_moves;</span>
+    }
+}
+
+class Archbishop extends ChessPiece{
+    public Archbishop(PlayerColour colour, PImage pieceSprite, int x, int y){
+<span class="nc" id="L286">        super(colour, pieceSprite, x, y, 7.5);</span>
+<span class="nc" id="L287">    }</span>
+    public ArrayList&lt;int[]&gt; getAvailableMoves(App app){
+<span class="nc" id="L289">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc" id="L290">        available_moves.addAll(this.getSpecialMoves(app, Knight.possible_moves));</span>
+<span class="nc" id="L291">        available_moves.addAll(this.getMovesDiagonals(app));</span>
+<span class="nc" id="L292">        return available_moves;</span>
+    }
+}
+
+class Camel extends ChessPiece{
+<span class="nc" id="L297">    public static int[][] possible_moves = {{3,1},{-3,1},{-3,-1},{3,-1},{1,3},{-1,3},{-1,-3},{1,-3}};</span>
+    public Camel(PlayerColour colour, PImage pieceSprite, int x, int y){
+<span class="nc" id="L299">        super(colour, pieceSprite, x, y, 2);</span>
+<span class="nc" id="L300">    } </span>
+    public ArrayList&lt;int[]&gt; getAvailableMoves(App app){
+<span class="nc" id="L302">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc" id="L303">        available_moves.addAll(this.getSpecialMoves(app, possible_moves));</span>
+<span class="nc" id="L304">        return available_moves;</span>
+    }
+}
+
+class Guard extends ChessPiece{
+    public Guard(PlayerColour colour, PImage pieceSprite, int x, int y){
+<span class="nc" id="L310">        super(colour, pieceSprite, x, y, 5);</span>
+<span class="nc" id="L311">    }</span>
+    public ArrayList&lt;int[]&gt; getAvailableMoves(App app){
+<span class="nc" id="L313">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc" id="L314">        available_moves.addAll(this.getSpecialMoves(app, Knight.possible_moves));</span>
+<span class="nc" id="L315">        available_moves.addAll(this.getSpecialMoves(app, King.possible_moves));</span>
+<span class="nc" id="L316">        return available_moves;</span>
+    }
+}
+
+class Amazon extends ChessPiece{
+    public Amazon(PlayerColour colour, PImage pieceSprite, int x, int y){
+<span class="nc" id="L322">        super(colour, pieceSprite, x, y, 12);</span>
+<span class="nc" id="L323">    }</span>
+    public ArrayList&lt;int[]&gt; getAvailableMoves(App app){
+<span class="nc" id="L325">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc" id="L326">        available_moves.addAll(this.getSpecialMoves(app, Knight.possible_moves));</span>
+<span class="nc" id="L327">        available_moves.addAll(this.getMovesRow(app));</span>
+<span class="nc" id="L328">        available_moves.addAll(this.getMovesColumn(app));</span>
+<span class="nc" id="L329">        available_moves.addAll(this.getMovesDiagonals(app));</span>
+<span class="nc" id="L330">        return available_moves;</span>
+    }
+}
+
+class King extends ChessPiece{
+<span class="nc" id="L335">    public static final int[][] possible_moves = {{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1},{1,0}};</span>
+    public King(PlayerColour colour, PImage pieceSprite, int x, int y){
+<span class="nc" id="L337">        super(colour, pieceSprite, x, y, 1000);</span>
+<span class="nc" id="L338">    }</span>
+    public ArrayList&lt;int[]&gt; getAvailableMoves(App app){
+<span class="nc" id="L340">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc" id="L341">        available_moves.addAll(this.getSpecialMoves(app, possible_moves));</span>
+<span class="nc" id="L342">        return available_moves;</span>
+    }
+}
+
+class Chancellor extends ChessPiece{
+    public Chancellor(PlayerColour colour, PImage pieceSprite, int x, int y){
+<span class="nc" id="L348">        super(colour, pieceSprite, x, y, 8.5);</span>
+<span class="nc" id="L349">    }</span>
+    public ArrayList&lt;int[]&gt; getAvailableMoves(App app){
+<span class="nc" id="L351">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
+<span class="nc" id="L352">        available_moves.addAll(this.getSpecialMoves(app, Knight.possible_moves));</span>
+<span class="nc" id="L353">        available_moves.addAll(this.getMovesRow(app));</span>
+<span class="nc" id="L354">        available_moves.addAll(this.getMovesColumn(app));</span>
+<span class="nc" id="L355">        return available_moves;</span>
+    }
+}
+
+class Queen extends ChessPiece{
+    public Queen(PlayerColour colour, PImage pieceSprite, int x, int y){
+<span class="nc" id="L361">        super(colour, pieceSprite, x, y, 9.5);</span>
+<span class="nc" id="L362">    }</span>
+    public ArrayList&lt;int[]&gt; getAvailableMoves(App app){
+<span class="nc" id="L364">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;(); </span>
+<span class="nc" id="L365">        available_moves.addAll(this.getMovesDiagonals(app));</span>
+<span class="nc" id="L366">        available_moves.addAll(this.getMovesColumn(app));</span>
+<span class="nc" id="L367">        available_moves.addAll(this.getMovesRow(app));</span>
+<span class="nc" id="L368">        return available_moves;</span>
+    }
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
