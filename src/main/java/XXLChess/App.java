@@ -8,6 +8,7 @@ import processing.data.JSONObject;
 import processing.data.JSONArray;
 import processing.core.PFont;
 import processing.event.MouseEvent;
+import java.lang.Math;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -34,9 +35,10 @@ public class App extends PApplet {
     public static PImage b_rook, b_knight, b_pawn, b_archbishop, b_bishop, b_camel, b_amazon, b_chancellor, b_guard, b_queen, b_king, w_rook, w_knight, w_pawn, w_archbishop, w_bishop, w_camel, w_amazon, w_chancellor, w_guard, w_queen, w_king;
     public static int WIDTH = CELLSIZE*BOARD_WIDTH+SIDEBAR;
     public static int HEIGHT = BOARD_WIDTH*CELLSIZE;
-    public static int message;
-    public String message2 = "asdf";
-    public static final int FPS = 60;
+    public static int message = 30;
+    public String message2 = "";
+    public static final int FPS = 120;
+    public int timer = 100*FPS;
     private boolean click;
     private boolean keyboard_pressed;
     public PlayerColour turn;
@@ -178,7 +180,7 @@ public class App extends PApplet {
                 else this.board[i][j] = new Cell(CellColour.DARK_BROWN);
             }
         }
-        LoadBoard("/Users/yaraslauivashynka/Downloads/xxlchess_scaffold (1)/level2.txt");
+        LoadBoard("/Users/yaraslauivashynka/Desktop/projects/xxlchess_scaffold/level2.txt");
 
 
         turn = PlayerColour.WHITE;
@@ -220,11 +222,16 @@ public class App extends PApplet {
         background(169,169,169);
         draw_board();
         textSize(40);
-        text(message, 670, 400);
-        text(message2, 670, 500);
+        text(timer, 670, 400);
+        if(timer % FPS == 0){
+            message -= 1;
+        }
+        timer -= 1;
+        text(message, 670, 500);
         AI ai = new AI(this, PlayerColour.BLACK);
         if(isCheckMate()){
-            message2 = "Checkmate";
+            fill(250, 0, 0);
+            text("Checkmate", 200, 360);
         }
         else if(turn == PlayerColour.BLACK){
             ai.move(this);
@@ -302,6 +309,25 @@ public class App extends PApplet {
         }
         return pieces;
     }
+    public ArrayList<ChessPiece> getPiecesCheckmate(){
+        ArrayList<ChessPiece> pieces;
+        ArrayList<ChessPiece> result = new ArrayList<ChessPiece>();
+        ChessPiece king = getKing(turn);
+        int[] king_position = king.getPosition();
+        if (turn == PlayerColour.BLACK)
+            pieces = getPieces(PlayerColour.WHITE);
+        else
+            pieces = getPieces(PlayerColour.BLACK);
+        for (ChessPiece piece : pieces){
+            ArrayList<int[]> moves = piece.getAvailableMoves(this);
+            for(int[] move : moves){
+                if ((Math.abs(move[0] - king_position[0]) + Math.abs(move[1] - king_position[1]) <= 2)&&(Math.abs(move[1] - king_position[1]) != 2)&& (Math.abs(move[0] - king_position[0]) != 2) ){
+                    result.add(piece);
+                }
+            }
+        }
+        return result;
+    }
     public boolean isLegalMove(int old_x, int old_y, int new_x, int new_y){
         ChessPiece piece = board[old_x][old_y].getPiece();
         boolean legal = true;
@@ -372,7 +398,13 @@ public class App extends PApplet {
                     board[position[0]][position[1]].setColour(CellColour.RED);
             }
         }
-        
+        if (isCheckMate()){
+            ArrayList<ChessPiece> pieces= getPiecesCheckmate();
+            for(ChessPiece piece : pieces){
+                int[] position = piece.getPosition();
+                board[position[0]][position[1]].setColour(CellColour.RED);
+            }
+        }
 
         for(int i = 0; i < BOARD_WIDTH; i++){
             for(int j = 0; j < BOARD_WIDTH; j++){
@@ -403,12 +435,12 @@ public class App extends PApplet {
     }
 
     public void draw_move(int old_x, int old_y, int new_x, int new_y){
-        if (!(board[old_x][old_y].getColour() == CellColour.LIGHT_BLUE 
-            || board[old_x][old_y].getColour() == CellColour.LIGHT_BLUE)){
+        if (board[old_x][old_y].getColour() == CellColour.LIGHT_BROWN 
+            || board[old_x][old_y].getColour() == CellColour.DARK_BROWN){
         board[old_x][old_y].setColour(CellColour.YELLOW);
         }
-        if (!(board[new_x][new_y].getColour() == CellColour.LIGHT_BLUE 
-            || board[new_x][new_y].getColour() == CellColour.LIGHT_BLUE)){
+        if (board[new_x][new_y].getColour() == CellColour.LIGHT_BROWN 
+            || board[new_x][new_y].getColour() == CellColour.DARK_BROWN){
         board[new_x][new_y].setColour(CellColour.YELLOW);
         }
     }

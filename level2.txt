@@ -1,7 +1,6 @@
-K  QQQQQQ
+K
 
-
-
+r
 
 
 
@@ -11,4 +10,5 @@ K  QQQQQQ
 
 
 
-rrk
+
+rrrrrkb
