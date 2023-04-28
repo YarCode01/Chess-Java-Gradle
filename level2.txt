@@ -1,6 +1,5 @@
-K
-
-r
+RRRRRRRRK
+RRRRRRRRR
 
 
 
@@ -11,4 +10,5 @@ r
 
 
 
-rrrrrkb
+r
+kb

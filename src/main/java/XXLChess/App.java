@@ -44,6 +44,8 @@ public class App extends PApplet {
     public PlayerColour turn;
     public String configPath;
     public int[][] last_move = new int[][] {null, null};
+    private Timer timer_white, timer_black;
+    private AI ai;
 
     public App() {
         this.configPath = "config.json";
@@ -180,12 +182,14 @@ public class App extends PApplet {
                 else this.board[i][j] = new Cell(CellColour.DARK_BROWN);
             }
         }
-        LoadBoard("/Users/yaraslauivashynka/Desktop/projects/xxlchess_scaffold/level2.txt");
+        LoadBoard("/Users/yaraslauivashynka/Desktop/projects/xxlchess_scaffold/level1.txt");
 
-
+        timer_white = new Timer(0, 5, 3);
+        timer_black = new Timer(3, 0, 3);
         turn = PlayerColour.WHITE;
 		// load config
         JSONObject conf = loadJSONObject(new File(this.configPath));
+        ai = new AI(this, PlayerColour.BLACK);
         
     }
 
@@ -197,7 +201,7 @@ public class App extends PApplet {
         if (key == 'r'){
             setup();
         }
-    }
+    }   
     
     public void keyReleased(){
 
@@ -222,14 +226,13 @@ public class App extends PApplet {
         background(169,169,169);
         draw_board();
         textSize(40);
-        text(timer, 670, 400);
-        if(timer % FPS == 0){
-            message -= 1;
+        update_time(timer_white, timer_black, turn);
+        display_time(timer_white, timer_black, turn);
+        if(timer_black.getTime() <= 0 || timer_white.getTime() <= 0){
+            fill(250, 0, 0);
+            text("AI has won", 200, 360);
         }
-        timer -= 1;
-        text(message, 670, 500);
-        AI ai = new AI(this, PlayerColour.BLACK);
-        if(isCheckMate()){
+        else if(isCheckMate()){
             fill(250, 0, 0);
             text("Checkmate", 200, 360);
         }
@@ -269,6 +272,38 @@ public class App extends PApplet {
             }
         }
         return null;
+    }
+
+    public void update_time(Timer timer_white, Timer timer_black, PlayerColour turn){
+        if (timer_black.getTime() <= 0 || timer_white.getTime() <= 0 || isCheckMate()){
+            timer_black.finish();
+            timer_white.finish();
+        }
+        else if (turn == PlayerColour.WHITE){
+            if(timer_black.isRunning()){
+                timer_black.stop();
+            }
+            if(!timer_white.isRunning()){
+                timer_white.start();
+            }
+        }
+        else{
+            if(timer_white.isRunning()){
+                timer_white.stop();
+            }
+            if(!timer_black.isRunning()){
+                timer_black.start();
+            }
+        }
+    }
+
+    public void display_time(Timer timer_white, Timer timer_black, PlayerColour turn){
+        long time_white = timer_white.getTime();
+        long time_black = timer_black.getTime();
+        String time = Long.toString(time_white/60) + " : " + Long.toString(time_white%60);
+        text(time, 675, 500);
+        time = Long.toString(time_black/60) + " : " + Long.toString(time_black%60);
+        text(time, 675, 200);
     }
 
     public ChessPiece getKing(PlayerColour colour){
@@ -347,10 +382,10 @@ public class App extends PApplet {
     public void reset_colour(){
         for(int i = 0; i < BOARD_WIDTH; i++){
             for(int j = 0; j < BOARD_WIDTH; j++){
-                if(board[i][j].getColour() != CellColour.YELLOW || board[i][j].getColour() != CellColour.RED){
+                // if(board[i][j].getColour() != CellColour.YELLOW || board[i][j].getColour() != CellColour.RED){
                     if ((i+j)%2 == 0) this.board[i][j].setColour(CellColour.LIGHT_BROWN);
                     else this.board[i][j].setColour(CellColour.DARK_BROWN);
-                }
+                // }
             }
         }
     }
