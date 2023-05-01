@@ -9,6 +9,19 @@ public class SampleTest {
 
     @Test
     public void simpleTest() {
+        App app = new App();
+        app.loop();
+        for(int i = 0; i < app.BOARD_WIDTH; i++){
+            for(int j = 0; j < app.BOARD_WIDTH; j++){
+                if ((i+j)%2 == 0) app.board[i][j] = new Cell(CellColour.LIGHT_BROWN);
+                else app.board[i][j] = new Cell(CellColour.DARK_BROWN);
+            }
+        }
+        app.LoadBoard("/Users/yaraslauivashynka/Desktop/projects/xxlchess_scaffold/level1.txt");
+        AI ai = new AI(app, PlayerColour.BLACK);
+        app.turn = PlayerColour.BLACK;
+        ai.move(app);
         
     }
+
 }

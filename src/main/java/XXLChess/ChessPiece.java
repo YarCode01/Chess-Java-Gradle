@@ -24,6 +24,7 @@ public abstract class ChessPiece {
         int[] arr = {this.x, this.y};
         return arr;
     }
+
     public abstract ArrayList<int[]> getAvailableMoves(App app);
 
     public ArrayList<int[]> getAvailableCaptures(App app){
@@ -200,14 +201,14 @@ public abstract class ChessPiece {
         ArrayList<int[]> illegal_moves = new ArrayList<int[]>();
         ArrayList<int[]> available_moves = this.getAvailableMoves(app);
         for (int[] move : available_moves){
-            if(!app.isLegalMove(this.x, this.y, move[0], move[1])) illegal_moves.add(move);
+            if(!app.isLegalMove(this.x,this.y, move[0], move[1])) illegal_moves.add(move);
         }
         return illegal_moves;
     }
 
     public ArrayList<int[]> getLegalMoves(App app){
         ArrayList<int[]> available_moves = getAvailableMoves(app);
-        ArrayList<int[]> illegal_moves = getIllegalMoves(app);
+        ArrayList<int[]> illegal_moves = getIllegalMoves(app); //new ArrayList<int[]>();
         ArrayList<int[]> moves = new ArrayList<int[]>();
         for(int[] move : available_moves){
             moves.add(new int[] {move[0], move[1]});
@@ -277,9 +278,6 @@ class Pawn extends ChessPiece{
         }
         return available_moves;
     }
-
-
-
 
 }
 

@@ -143,7 +143,6 @@ public class App extends PApplet {
         } catch(FileNotFoundException e){
             e.printStackTrace();
         }
-        
     }
     public void setup() {
         frameRate(FPS);
@@ -184,8 +183,8 @@ public class App extends PApplet {
         }
         LoadBoard("/Users/yaraslauivashynka/Desktop/projects/xxlchess_scaffold/level1.txt");
 
-        timer_white = new Timer(0, 5, 3);
-        timer_black = new Timer(3, 0, 3);
+        timer_white = new Timer(10, 5, 3);
+        timer_black = new Timer(10, 0, 3);
         turn = PlayerColour.WHITE;
 		// load config
         JSONObject conf = loadJSONObject(new File(this.configPath));
@@ -226,6 +225,8 @@ public class App extends PApplet {
         background(169,169,169);
         draw_board();
         textSize(40);
+        fill(250, 0, 0);
+        text(message, 200, 360);
         update_time(timer_white, timer_black, turn);
         display_time(timer_white, timer_black, turn);
         if(timer_black.getTime() <= 0 || timer_white.getTime() <= 0){
@@ -250,7 +251,7 @@ public class App extends PApplet {
                     select_current_piece(x_clicked,y_clicked);
                     board[x_clicked][y_clicked].getPiece().select(this);
                 }
-                else if(board[x_clicked][y_clicked].getColour() == CellColour.LIGHT_BLUE || board[x_clicked][y_clicked].getColour() == CellColour.DARK_BLUE || board[x_clicked][y_clicked].getColour() == CellColour.ORANGE){    
+                else if(board[x_clicked][y_clicked].getColour() == CellColour.LIGHT_BLUE || board[x_clicked][y_clicked].getColour() == CellColour.DARK_BLUE || board[x_clicked][y_clicked].getColour() == CellColour.ORANGE){   
                         selected_cell.getPiece().move(this, x_clicked, y_clicked);
                         last_move[0] = null;
                         last_move[1] = null;
@@ -297,19 +298,84 @@ public class App extends PApplet {
         }
     }
 
+    public double getScore() {
+        double score = 0;
+    
+        for (int i = 0; i < BOARD_WIDTH; i++) {
+            for (int j = 0; j < BOARD_WIDTH; j++) {
+                ChessPiece piece = board[i][j].getPiece();
+                if (piece != null && !(piece instanceof King)) {
+                    double value = piece.getValue();
+                    if (piece.getColour() == PlayerColour.WHITE) {
+                        if(i >= 3 && i <= 10 && j >=3 && j <= 10){
+                            // score++;
+                        }
+                        score += value;
+                        // score += piece.getLegalMoves(this).size();
+                    } else {
+                        if(i >= 3 && i <= 10 && j >= 3 && j <= 10){
+                            // score--;
+                        }
+                        score -= value;
+                        // score -= piece.getLegalMoves(this).size();
+                    }
+                }
+            }
+        }
+    
+        // // Control of center
+        // int centerControl = 0;
+        // Piece[][] pieces = board.getPieces();
+        // for (int i = 2; i < 6; i++) {
+        //     for (int j = 2; j < 6; j++) {
+        //         Piece piece = pieces[i][j];
+        //         if (piece != null) {
+        //             if (piece.getColor() == Piece.Color.WHITE) {
+        //                 centerControl++;
+        //             } else {
+        //                 centerControl--;
+        //             }
+        //         }
+        //     }
+        // }
+        // score += centerControl;
+    
+        // // Safety of king
+        // King whiteKing = board.getWhiteKing();
+        // King blackKing = board.getBlackKing();
+        // if (!whiteKing.isSafe()) {
+        //     score -= 50;
+        // }
+        // if (!blackKing.isSafe()) {
+        //     score += 50;
+        // }
+    
+        // // Mobility of pieces
+        // int whiteMobility = board.getLegalMoves(Piece.Color.WHITE).size();
+        // int blackMobility = board.getLegalMoves(Piece.Color.BLACK).size();
+        // score += (whiteMobility - blackMobility);
+    
+        return score;
+    }
+    
+
     public void display_time(Timer timer_white, Timer timer_black, PlayerColour turn){
         long time_white = timer_white.getTime();
         long time_black = timer_black.getTime();
-        String time = Long.toString(time_white/60) + " : " + Long.toString(time_white%60);
-        text(time, 675, 500);
-        time = Long.toString(time_black/60) + " : " + Long.toString(time_black%60);
-        text(time, 675, 200);
+        String seconds = Long.toString(time_white%60);
+        if(time_white%60 < 10) seconds = "0" + seconds;
+        String time = Long.toString(time_white/60) + ":" + seconds;
+        text(time, 675, 600);
+        seconds = Long.toString(time_black%60);
+        if(time_black%60 < 10) seconds = "0" + seconds;
+        time = Long.toString(time_black/60) + ":" + seconds;
+        text(time, 675, 100);
     }
 
     public ChessPiece getKing(PlayerColour colour){
         return getKing(this.board, colour);
     }
-    public boolean isCheck(){
+    public boolean isCheck(PlayerColour turn){
         ChessPiece king = getKing(board, turn);
         ArrayList<ChessPiece> opposite_pieces;
         if (turn == PlayerColour.WHITE){
@@ -326,6 +392,10 @@ public class App extends PApplet {
             }
         }
         return false;
+    }
+
+    public boolean isCheck(){
+        return isCheck(turn);
     }
 
     public ArrayList<ChessPiece> getPieces(PlayerColour colour){ 
@@ -363,6 +433,22 @@ public class App extends PApplet {
         }
         return result;
     }
+
+    public boolean isLegalMove(ChessPiece piece, int new_x, int new_y){
+        boolean legal = true;
+        int[] position = piece.getPosition();
+        Cell original_cell = new Cell(board[new_x][new_y].getColour(), board[new_x][new_y].getPiece());
+        this.board[position[0]][position[1]].setPiece(null);
+        this.board[new_x][new_y].setPiece(piece);
+        piece.setPosition(new_x,new_y);
+        if (isCheck()){
+            legal = false;
+        }
+        this.board[position[0]][position[1]].setPiece(piece);
+        this.board[new_x][new_y] = original_cell;
+        piece.setPosition(position[0], position[1]);
+        return legal;
+    }
     public boolean isLegalMove(int old_x, int old_y, int new_x, int new_y){
         ChessPiece piece = board[old_x][old_y].getPiece();
         boolean legal = true;
@@ -390,7 +476,7 @@ public class App extends PApplet {
         }
     }
 
-    public boolean isCheckMate(){
+    public boolean isCheckMate(PlayerColour turn){
         ArrayList<ChessPiece> pieces = getPieces(turn);
         for (ChessPiece piece : pieces){
             if(piece.getLegalMoves(this).size() > 0){
@@ -403,6 +489,11 @@ public class App extends PApplet {
         }
         return false;
     }
+
+    public boolean isCheckMate(){
+        return isCheckMate(turn);
+    }
+
     public void deselectIllegalMoves(ArrayList<int[]> illegal_moves){
         for(int[] move : illegal_moves){
             if((move[0] + move[1])%2 == 0) board[move[0]][move[1]].setColour(CellColour.LIGHT_BROWN);

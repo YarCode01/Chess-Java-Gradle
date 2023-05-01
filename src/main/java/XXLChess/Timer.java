@@ -10,6 +10,7 @@ public class Timer {
         this.time_left = minutes*60*1000 + seconds*1000;
         this.increment = increment;
     }
+    
     public void start(){
         if(!running){
             this.start_time = System.currentTimeMillis();
@@ -27,7 +28,10 @@ public class Timer {
 
     }
     public void finish(){
-        this.time_left = getTime();
+        if(running){
+            this.elapsed_time = System.currentTimeMillis() - this.start_time;
+            this.time_left -= this.elapsed_time;
+        }
         running = false;
     }
 
