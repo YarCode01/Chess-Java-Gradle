@@ -43,9 +43,10 @@ public class App extends PApplet {
     private boolean keyboard_pressed;
     public PlayerColour turn;
     public String configPath;
-    public int[][] last_move = new int[][] {null, null};
+    public int[][] last_move;
     private Timer timer_white, timer_black;
     private AI ai;
+    private boolean resigned;
 
     public App() {
         this.configPath = "config.json";
@@ -181,15 +182,34 @@ public class App extends PApplet {
                 else this.board[i][j] = new Cell(CellColour.DARK_BROWN);
             }
         }
-        LoadBoard("/Users/yaraslauivashynka/Desktop/projects/xxlchess_scaffold/level1.txt");
-
-        timer_white = new Timer(10, 5, 3);
-        timer_black = new Timer(10, 0, 3);
-        turn = PlayerColour.WHITE;
-		// load config
-        JSONObject conf = loadJSONObject(new File(this.configPath));
-        ai = new AI(this, PlayerColour.BLACK);
         
+        JSONObject conf = loadJSONObject(new File(this.configPath));
+        String file_name = conf.getString("layout");
+
+        int seconds_player = conf.getJSONObject("time_controls").getJSONObject("player").getInt("seconds");
+        int increment_player = conf.getJSONObject("time_controls").getJSONObject("player").getInt("increment");
+
+        int seconds_cpu = conf.getJSONObject("time_controls").getJSONObject("cpu").getInt("seconds");
+        int increment_cpu = conf.getJSONObject("time_controls").getJSONObject("cpu").getInt("increment");
+
+        PlayerColour colour_of_player = ((conf.getString("player_colour") == "white") ? PlayerColour.WHITE : PlayerColour.BLACK);
+        PlayerColour colour_of_cpu = ((conf.getString("player_colour") == "white") ? PlayerColour.BLACK : PlayerColour.WHITE);
+
+        if (colour_of_player == PlayerColour.WHITE){
+            timer_white = new Timer((int) seconds_player/60, seconds_player%60, increment_player);
+            timer_black = new Timer((int) seconds_cpu/60, seconds_cpu%60, increment_cpu);
+        }
+        else{
+            timer_white = new Timer((int) seconds_cpu/60, seconds_cpu%60, increment_cpu);
+            timer_black = new Timer((int) seconds_player/60, seconds_player%60, increment_player);
+        }
+        
+        turn = PlayerColour.WHITE;
+        LoadBoard(file_name);
+        ai = new AI(this, colour_of_cpu);
+        resigned = false;
+        last_move = new int[][] {null, null};
+
     }
 
     /**
@@ -199,6 +219,9 @@ public class App extends PApplet {
     public void keyPressed() {
         if (key == 'r'){
             setup();
+        }
+        if (key == 'e'){
+            resigned = true;
         }
     }   
     
@@ -226,18 +249,29 @@ public class App extends PApplet {
         draw_board();
         textSize(40);
         fill(250, 0, 0);
-        text(message, 200, 360);
+        if(resigned){
+            text("AI won due to resignation", 120, 360);
+            return;
+        }
         update_time(timer_white, timer_black, turn);
         display_time(timer_white, timer_black, turn);
-        if(timer_black.getTime() <= 0 || timer_white.getTime() <= 0){
+        if(timer_black.getTime() <= 0){
             fill(250, 0, 0);
-            text("AI has won", 200, 360);
+            text("Player won because of timeout",120, 360);
+            timer_black.finish();
+            timer_white.finish();
         }
-        else if(isCheckMate()){
+        else if (timer_white.getTime() <= 0){
+            fill(250, 0, 0);
+            text("AI won because of timeout",120, 360);
+            timer_black.finish();
+            timer_white.finish();
+        }
+        else if(isCheckMate(turn)){
             fill(250, 0, 0);
             text("Checkmate", 200, 360);
         }
-        else if(turn == PlayerColour.BLACK){
+        else if(turn == ai.getColour()){
             ai.move(this);
             ChangeTurn();
         }
@@ -308,13 +342,14 @@ public class App extends PApplet {
                     double value = piece.getValue();
                     if (piece.getColour() == PlayerColour.WHITE) {
                         if(i >= 3 && i <= 10 && j >=3 && j <= 10){
-                            // score++;
+                            score++;
                         }
                         score += value;
                         // score += piece.getLegalMoves(this).size();
-                    } else {
+                    }
+                    else {
                         if(i >= 3 && i <= 10 && j >= 3 && j <= 10){
-                            // score--;
+                            score--;
                         }
                         score -= value;
                         // score -= piece.getLegalMoves(this).size();
@@ -322,44 +357,25 @@ public class App extends PApplet {
                 }
             }
         }
-    
-        // // Control of center
-        // int centerControl = 0;
-        // Piece[][] pieces = board.getPieces();
-        // for (int i = 2; i < 6; i++) {
-        //     for (int j = 2; j < 6; j++) {
-        //         Piece piece = pieces[i][j];
-        //         if (piece != null) {
-        //             if (piece.getColor() == Piece.Color.WHITE) {
-        //                 centerControl++;
-        //             } else {
-        //                 centerControl--;
-        //             }
-        //         }
-        //     }
-        // }
-        // score += centerControl;
-    
-        // // Safety of king
-        // King whiteKing = board.getWhiteKing();
-        // King blackKing = board.getBlackKing();
-        // if (!whiteKing.isSafe()) {
-        //     score -= 50;
-        // }
-        // if (!blackKing.isSafe()) {
-        //     score += 50;
-        // }
-    
-        // // Mobility of pieces
-        // int whiteMobility = board.getLegalMoves(Piece.Color.WHITE).size();
-        // int blackMobility = board.getLegalMoves(Piece.Color.BLACK).size();
-        // score += (whiteMobility - blackMobility);
-    
+        if (isCheck(PlayerColour.WHITE)) {
+            score -= 5;
+        }
+        if (isCheck(PlayerColour.BLACK)) {
+            score += 5;
+        }
+
+        if (isCheckMate(PlayerColour.WHITE)) {
+            score -= 10000;
+        }
+        if (isCheck(PlayerColour.BLACK)) {
+            score += 10000;
+        }
         return score;
     }
     
 
     public void display_time(Timer timer_white, Timer timer_black, PlayerColour turn){
+        fill(255,255,255);
         long time_white = timer_white.getTime();
         long time_black = timer_black.getTime();
         String seconds = Long.toString(time_white%60);
@@ -441,7 +457,7 @@ public class App extends PApplet {
         this.board[position[0]][position[1]].setPiece(null);
         this.board[new_x][new_y].setPiece(piece);
         piece.setPosition(new_x,new_y);
-        if (isCheck()){
+        if (isCheck(piece.getColour())){
             legal = false;
         }
         this.board[position[0]][position[1]].setPiece(piece);
@@ -480,11 +496,10 @@ public class App extends PApplet {
         ArrayList<ChessPiece> pieces = getPieces(turn);
         for (ChessPiece piece : pieces){
             if(piece.getLegalMoves(this).size() > 0){
-                message2 = "no checkmate";
                 return false;
             }
         }
-        if (isCheck()){
+        if (isCheck(turn)){
             return true;
         }
         return false;

@@ -1,7 +1,6 @@
-RRRRRRRRK
-RRRRRRRRR
-
-
+PKP
+PRP 
+  R
 
 
    
@@ -10,5 +9,6 @@ RRRRRRRRR
 
 
 
-r
-kb
+
+
+kr

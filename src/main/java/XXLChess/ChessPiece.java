@@ -11,6 +11,7 @@ public abstract class ChessPiece {
     protected PlayerColour colour;
     protected double value;
     protected PImage pieceSprite;
+    protected boolean moved;
 
     public ChessPiece(PlayerColour colour, PImage pieceSprite, int x, int y, double value){
         this.pieceSprite = pieceSprite;
@@ -162,6 +163,7 @@ public abstract class ChessPiece {
             else
                 break;
         }
+        
         for(int i = 1; i <= app.BOARD_WIDTH; i++){
             if (app.cell_available(this.x + i, this.y - i)){
                 available_moves.add(new int[] {this.x + i, this.y - i});
@@ -201,7 +203,7 @@ public abstract class ChessPiece {
         ArrayList<int[]> illegal_moves = new ArrayList<int[]>();
         ArrayList<int[]> available_moves = this.getAvailableMoves(app);
         for (int[] move : available_moves){
-            if(!app.isLegalMove(this.x,this.y, move[0], move[1])) illegal_moves.add(move);
+            if(!app.isLegalMove(this, move[0], move[1])) illegal_moves.add(move);
         }
         return illegal_moves;
     }
@@ -287,6 +289,14 @@ class Rook extends ChessPiece{
         super(colour, pieceSprite, x, y, 5.25);
     }
 
+    public void move(App app, int new_x, int new_y){
+        moved = true;
+        app.board[this.x][this.y].setPiece(null);
+        app.board[new_x][new_y].setPiece(this);
+        this.x = new_x;
+        this.y = new_y;
+    } 
+
     public ArrayList<int[]> getAvailableMoves(App app){
         ArrayList<int[]> available_moves = new ArrayList<int[]>();
         available_moves.addAll(this.getMovesRow(app));
@@ -371,12 +381,46 @@ class Amazon extends ChessPiece{
 
 class King extends ChessPiece{
     public static final int[][] possible_moves = {{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1},{1,0}};
+    
     public King(PlayerColour colour, PImage pieceSprite, int x, int y){
         super(colour, pieceSprite, x, y, 1000);
     }
+
+    public void move(App app, int new_x, int new_y){
+        moved = true;
+        if(new_x - this.x >= 2){
+            Rook rook = (Rook) app.board[app.BOARD_WIDTH-1][this.y].getPiece();
+            rook.move(app, this.x+1, this.y);
+        }
+        if(this.x - new_x >= 2){
+            Rook rook = (Rook) app.board[0][this.y].getPiece();
+            rook.move(app, this.x-1, this.y);
+        }
+        app.board[this.x][this.y].setPiece(null);
+        app.board[new_x][new_y].setPiece(this);
+        this.x = new_x;
+        this.y = new_y;
+    }
+
     public ArrayList<int[]> getAvailableMoves(App app){
         ArrayList<int[]> available_moves = new ArrayList<int[]>();
         available_moves.addAll(this.getSpecialMoves(app, possible_moves));
+        if(!this.moved){
+            if (app.cell_available(this.x+2, this.y) && app.cell_available(this.x+1, this.y)){
+                for(int i=this.x+1; i < app.BOARD_WIDTH; i++){
+                    if (app.board[i][this.y].getPiece() instanceof Rook && !app.board[i][this.y].getPiece().moved){
+                        available_moves.add(new int[] {this.x+2, this.y});
+                    }
+                }
+            }
+            if (app.cell_available(this.x-2, this.y) && app.cell_available(this.x-1, this.y)){
+                for(int i=this.x-1; i >= 0; i--){
+                    if (app.board[i][this.y].getPiece() instanceof Rook && !app.board[i][this.y].getPiece().moved){
+                        available_moves.add(new int[] {this.x-2, this.y});
+                    }
+                }
+            }
+        }
         return available_moves;
     }
 }

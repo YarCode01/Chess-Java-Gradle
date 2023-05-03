@@ -32,6 +32,9 @@ public class Timer {
             this.elapsed_time = System.currentTimeMillis() - this.start_time;
             this.time_left -= this.elapsed_time;
         }
+        if(time_left < 0){
+            time_left = 0;
+        }
         running = false;
     }
 
