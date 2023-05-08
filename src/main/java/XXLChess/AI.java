@@ -7,11 +7,35 @@ public class AI {
     private PlayerColour colour;
     private ArrayList<ChessPiece> available_pieces;
     private int i = 0;
+    private Difficulty difficulty;
+    public enum Difficulty{
+        EASY,
+        MEDIUM,
+        HARD}
     
 
     public AI(App app, PlayerColour colour){
         this.colour = colour;
         this.available_pieces = app.getPieces(this.colour);
+    }
+
+    public AI(App app, PlayerColour colour, String difficulty){
+        this.colour = colour;
+        this.available_pieces = app.getPieces(this.colour);
+
+        if(difficulty.toUpperCase().equals("EASY")){
+            this.difficulty = Difficulty.EASY;
+        }
+        else if(difficulty.toUpperCase().equals("MEDIUM")){
+            this.difficulty = Difficulty.MEDIUM;
+        }
+        else if(difficulty.toUpperCase().equals("HARD")){
+            this.difficulty = Difficulty.HARD;
+        }
+        else{
+            this.difficulty = Difficulty.EASY;
+        }
+
     }
 
     public PlayerColour getColour(){
@@ -124,6 +148,14 @@ public class AI {
         }
     }
 
+    public int[][] random_move(App app){
+        ArrayList<ChessPiece> pieces = app.getPieces(app.turn);
+        ChessPiece piece = pieces.get((int)(Math.random() * pieces.size()));
+        ArrayList<int[]> moves = piece.getLegalMoves(app);
+        int[] move = moves.get((int)(Math.random() * moves.size()));
+        return new int[][] {{piece.getPosition()[0], piece.getPosition()[1]}, {move[0], move[1]}};
+    }
+
     public void move(App app){
         if (app.isCheck(app.turn)){
             ChessPiece king = app.getKing(app.turn);
@@ -131,12 +163,23 @@ public class AI {
             app.board[position[0]][position[1]].setColour(CellColour.RED);
         }
         
-        // MinMax AI
-        int[][] min_max_move = minimax(app, 2, app.turn);
-        ChessPiece piece = app.board[min_max_move[0][0]][min_max_move[0][1]].getPiece();
+        int[][] move = new int[2][2];
+        if(this.difficulty == Difficulty.EASY){
+            move = random_move(app);
+        }
+        else if(this.difficulty == Difficulty.MEDIUM){
+            move = minimax(app, 1, app.turn);
+        }
+        else if(this.difficulty == Difficulty.HARD){
+            move = minimax(app, 2, app.turn);
+        }
+        else{
+            move = random_move(app);
+        }
+        ChessPiece piece = app.board[move[0][0]][move[0][1]].getPiece();
         app.last_move[0] = new int[] {piece.getPosition()[0],piece.getPosition()[1]};
-        app.last_move[1] = new int[] {min_max_move[1][0], min_max_move[1][1]};
-        piece.move(app, min_max_move[1][0], min_max_move[1][1]);
+        app.last_move[1] = new int[] {move[1][0], move[1][1]};
+        piece.move(app, move[1][0], move[1][1]);
         return;
     
 

@@ -37,7 +37,7 @@ public class App extends PApplet {
     public static int HEIGHT = BOARD_WIDTH*CELLSIZE;
     public static int message = 30;
     public String message2 = "";
-    public static final int FPS = 120;
+    public static final int FPS = 60;
     public int timer = 100*FPS;
     private boolean click;
     private boolean keyboard_pressed;
@@ -206,7 +206,7 @@ public class App extends PApplet {
         
         turn = PlayerColour.WHITE;
         LoadBoard(file_name);
-        ai = new AI(this, colour_of_cpu);
+        ai = new AI(this, colour_of_cpu, conf.getString("AI_difficulty"));
         resigned = false;
         last_move = new int[][] {null, null};
 

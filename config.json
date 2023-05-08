@@ -12,6 +12,7 @@
   },
   "player_colour": "black",
   "piece_movement_speed": 6.0,
-  "max_movement_time": 1
+  "max_movement_time": 1,
+  "AI_difficulty" : "HARD"
 }
 
