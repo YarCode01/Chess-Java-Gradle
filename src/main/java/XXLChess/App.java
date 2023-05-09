@@ -26,10 +26,8 @@ public class App extends PApplet {
     public static final int SIDEBAR = 120;
     public static final int BOARD_WIDTH = 14;
     public Cell[][] board = new Cell[14][14];
-    private static int x_clicked=5;
-    private static int y_clicked=5;
-    private static int mouse_clicked_x;
-    private static int mouse_clicked_y;
+    public static int x_clicked;
+    public static int y_clicked;
     private static int value;
     private Cell selected_cell;
     public static PImage b_rook, b_knight, b_pawn, b_archbishop, b_bishop, b_camel, b_amazon, b_chancellor, b_guard, b_queen, b_king, w_rook, w_knight, w_pawn, w_archbishop, w_bishop, w_camel, w_amazon, w_chancellor, w_guard, w_queen, w_king;
@@ -39,14 +37,14 @@ public class App extends PApplet {
     public String message2 = "";
     public static final int FPS = 60;
     public int timer = 100*FPS;
-    private boolean click;
+    public boolean click;
     private boolean keyboard_pressed;
     public PlayerColour turn;
     public String configPath;
     public int[][] last_move;
-    private Timer timer_white, timer_black;
-    private AI ai;
-    private boolean resigned;
+    public Timer timer_white, timer_black;
+    public AI ai;
+    public boolean resigned;
 
     public App() {
         this.configPath = "config.json";
@@ -192,8 +190,8 @@ public class App extends PApplet {
         int seconds_cpu = conf.getJSONObject("time_controls").getJSONObject("cpu").getInt("seconds");
         int increment_cpu = conf.getJSONObject("time_controls").getJSONObject("cpu").getInt("increment");
 
-        PlayerColour colour_of_player = ((conf.getString("player_colour") == "white") ? PlayerColour.WHITE : PlayerColour.BLACK);
-        PlayerColour colour_of_cpu = ((conf.getString("player_colour") == "white") ? PlayerColour.BLACK : PlayerColour.WHITE);
+        PlayerColour colour_of_player = ((conf.getString("player_colour").equals("white")) ? PlayerColour.WHITE : PlayerColour.BLACK);
+        PlayerColour colour_of_cpu = ((conf.getString("player_colour").equals("white")) ? PlayerColour.BLACK : PlayerColour.WHITE);
 
         if (colour_of_player == PlayerColour.WHITE){
             timer_white = new Timer((int) seconds_player/60, seconds_player%60, increment_player);
@@ -509,12 +507,6 @@ public class App extends PApplet {
         return isCheckMate(turn);
     }
 
-    public void deselectIllegalMoves(ArrayList<int[]> illegal_moves){
-        for(int[] move : illegal_moves){
-            if((move[0] + move[1])%2 == 0) board[move[0]][move[1]].setColour(CellColour.LIGHT_BROWN);
-            else board[move[0]][move[1]].setColour(CellColour.DARK_BROWN);
-        }
-    }
     public void reset_last_move(){
         for(int i = 0; i < BOARD_WIDTH; i++){
             for(int j = 0; j < BOARD_WIDTH; j++){

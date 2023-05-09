@@ -8,16 +8,12 @@ public class AI {
     private ArrayList<ChessPiece> available_pieces;
     private int i = 0;
     private Difficulty difficulty;
+
     public enum Difficulty{
         EASY,
         MEDIUM,
         HARD}
     
-
-    public AI(App app, PlayerColour colour){
-        this.colour = colour;
-        this.available_pieces = app.getPieces(this.colour);
-    }
 
     public AI(App app, PlayerColour colour, String difficulty){
         this.colour = colour;

@@ -1,47 +1,183 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AI.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">xxlchess_scaffold (1)</a> &gt; <a href="index.source.html" class="el_package">XXLChess</a> &gt; <span class="el_source">AI.java</span></div><h1>AI.java</h1><pre class="source lang-java linenums">package XXLChess;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AI.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">xxlchess_scaffold</a> &gt; <a href="index.source.html" class="el_package">XXLChess</a> &gt; <span class="el_source">AI.java</span></div><h1>AI.java</h1><pre class="source lang-java linenums">package XXLChess;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class AI {
     private PlayerColour colour;
     private ArrayList&lt;ChessPiece&gt; available_pieces;
+<span class="fc" id="L9">    private int i = 0;</span>
+    private Difficulty difficulty;
+<span class="fc" id="L11">    public enum Difficulty{</span>
+<span class="fc" id="L12">        EASY,</span>
+<span class="fc" id="L13">        MEDIUM,</span>
+<span class="fc" id="L14">        HARD}</span>
     
 
-<span class="nc" id="L10">    public AI(App app, PlayerColour colour){</span>
-<span class="nc" id="L11">        this.colour = colour;</span>
-<span class="nc" id="L12">        this.available_pieces = app.getPieces(this.colour);</span>
-<span class="nc" id="L13">    }</span>
+<span class="fc" id="L17">    public AI(App app, PlayerColour colour, String difficulty){</span>
+<span class="fc" id="L18">        this.colour = colour;</span>
+<span class="fc" id="L19">        this.available_pieces = app.getPieces(this.colour);</span>
+
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        if(difficulty.toUpperCase().equals(&quot;EASY&quot;)){</span>
+<span class="fc" id="L22">            this.difficulty = Difficulty.EASY;</span>
+        }
+<span class="pc bpc" id="L24" title="1 of 2 branches missed.">        else if(difficulty.toUpperCase().equals(&quot;MEDIUM&quot;)){</span>
+<span class="nc" id="L25">            this.difficulty = Difficulty.MEDIUM;</span>
+        }
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        else if(difficulty.toUpperCase().equals(&quot;HARD&quot;)){</span>
+<span class="fc" id="L28">            this.difficulty = Difficulty.HARD;</span>
+        }
+        else{
+<span class="nc" id="L31">            this.difficulty = Difficulty.EASY;</span>
+        }
+
+<span class="fc" id="L34">    }</span>
+
+    public PlayerColour getColour(){
+<span class="fc" id="L37">        return this.colour;</span>
+    }
+
+    public int[][] minimax(App app, int depth, PlayerColour turn) {
+<span class="pc bpc" id="L41" title="2 of 6 branches missed.">        if (depth == 0 || app.isCheckMate(PlayerColour.WHITE) || app.isCheckMate(PlayerColour.BLACK)) {</span>
+<span class="fc" id="L42">            return null; </span>
+        }
+
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (turn == PlayerColour.WHITE) {</span>
+<span class="fc" id="L46">            double best_score = -100000; </span>
+<span class="fc" id="L47">            int[][] best_move = null;</span>
+<span class="fc" id="L48">            ArrayList&lt;ChessPiece&gt; pieces = app.getPieces(turn);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">            for(ChessPiece piece : pieces){</span>
+<span class="fc" id="L50">                ArrayList&lt;int[]&gt; moves = piece.getLegalMoves(app);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">                for (int[] move : moves){</span>
+<span class="fc" id="L52">                    Cell original_cell = new Cell(app.board[move[0]][move[1]].getColour(), app.board[move[0]][move[1]].getPiece());</span>
+<span class="fc" id="L53">                    int[] position = piece.getPosition();</span>
+<span class="fc" id="L54">                    app.board[position[0]][position[1]].setPiece(null);</span>
+<span class="fc" id="L55">                    app.board[move[0]][move[1]].setPiece(piece);</span>
+<span class="fc" id="L56">                    piece.setPosition(move[0],move[1]);</span>
+<span class="fc" id="L57">                    int[][] opposite_best_move = minimax(app, depth - 1, PlayerColour.BLACK);</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">                    if (opposite_best_move != null){</span>
+<span class="fc" id="L59">                        int[] opposite_position = opposite_best_move[0];</span>
+<span class="fc" id="L60">                        int[] opposite_move = opposite_best_move[1];</span>
+<span class="fc" id="L61">                        Cell opposite_original_cell = new Cell(app.board[opposite_move[0]][opposite_move[1]].getColour(), app.board[opposite_move[0]][opposite_move[1]].getPiece());</span>
+<span class="fc" id="L62">                        ChessPiece opposite_piece = app.board[opposite_position[0]][opposite_position[1]].getPiece();</span>
+
+<span class="fc" id="L64">                        app.board[opposite_position[0]][opposite_position[1]].setPiece(null);</span>
+<span class="fc" id="L65">                        app.board[opposite_move[0]][opposite_move[1]].setPiece(opposite_piece);</span>
+<span class="fc" id="L66">                        opposite_piece.setPosition(opposite_move[0],opposite_move[1]);</span>
+
+<span class="fc" id="L68">                        double score = app.getScore();</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">                        if (score &gt; best_score){</span>
+<span class="fc" id="L70">                            best_score = score;</span>
+<span class="fc" id="L71">                            best_move = new int[][] {{position[0],position[1]}, {move[0],move[1]}};</span>
+                        }
+
+<span class="fc" id="L74">                        app.board[opposite_position[0]][opposite_position[1]].setPiece(opposite_piece);</span>
+<span class="fc" id="L75">                        app.board[opposite_move[0]][opposite_move[1]] = opposite_original_cell;</span>
+<span class="fc" id="L76">                        opposite_piece.setPosition(opposite_position[0], opposite_position[1]);</span>
+<span class="fc" id="L77">                    }</span>
+                    else{
+<span class="nc" id="L79">                        double score = app.getScore();</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">                        if (score &gt; best_score){</span>
+<span class="nc" id="L81">                            best_score = score;</span>
+<span class="nc" id="L82">                            best_move = new int[][] {{position[0],position[1]}, {move[0],move[1]}};</span>
+                        }
+                    }
+
+
+<span class="fc" id="L87">                    app.board[position[0]][position[1]].setPiece(piece);</span>
+<span class="fc" id="L88">                    app.board[move[0]][move[1]] = original_cell;</span>
+<span class="fc" id="L89">                    piece.setPosition(position[0], position[1]);</span>
+<span class="fc" id="L90">                }</span>
+<span class="fc" id="L91">            }</span>
+
+<span class="fc" id="L93">            return best_move;</span>
+        }
+        else {
+<span class="fc" id="L96">            double best_score = 100000;</span>
+<span class="fc" id="L97">            int[][] best_move = null;</span>
+<span class="fc" id="L98">            ArrayList&lt;ChessPiece&gt; pieces = app.getPieces(turn);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">            for(ChessPiece piece : pieces){</span>
+<span class="fc" id="L100">                ArrayList&lt;int[]&gt; moves = piece.getLegalMoves(app);</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">                for (int[] move : moves){</span>
+
+<span class="fc" id="L103">                    Cell original_cell = new Cell(app.board[move[0]][move[1]].getColour(), app.board[move[0]][move[1]].getPiece());</span>
+<span class="fc" id="L104">                    int[] position = piece.getPosition();</span>
+<span class="fc" id="L105">                    app.board[position[0]][position[1]].setPiece(null);</span>
+<span class="fc" id="L106">                    app.board[move[0]][move[1]].setPiece(piece);</span>
+<span class="fc" id="L107">                    piece.setPosition(move[0],move[1]);</span>
+<span class="fc" id="L108">                    int[][] opposite_best_move = minimax(app, depth - 1, PlayerColour.WHITE);</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">                    if (opposite_best_move != null){</span>
+<span class="nc" id="L110">                        int[] opposite_position = opposite_best_move[0];</span>
+<span class="nc" id="L111">                        int[] opposite_move = opposite_best_move[1];</span>
+<span class="nc" id="L112">                        Cell opposite_original_cell = new Cell(app.board[opposite_move[0]][opposite_move[1]].getColour(), app.board[opposite_move[0]][opposite_move[1]].getPiece());</span>
+<span class="nc" id="L113">                        ChessPiece opposite_piece = app.board[opposite_position[0]][opposite_position[1]].getPiece();</span>
+                        
+<span class="nc" id="L115">                        app.board[opposite_position[0]][opposite_position[1]].setPiece(null);</span>
+<span class="nc" id="L116">                        app.board[opposite_move[0]][opposite_move[1]].setPiece(opposite_piece);</span>
+<span class="nc" id="L117">                        opposite_piece.setPosition(opposite_move[0],opposite_move[1]);</span>
+
+<span class="nc" id="L119">                        double score = app.getScore();</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">                        if (score &lt; best_score){</span>
+<span class="nc" id="L121">                            best_score = score;</span>
+<span class="nc" id="L122">                            best_move = new int[][] {{position[0],position[1]}, {move[0],move[1]}};</span>
+                        }
+
+<span class="nc" id="L125">                        app.board[opposite_position[0]][opposite_position[1]].setPiece(opposite_piece);</span>
+<span class="nc" id="L126">                        app.board[opposite_move[0]][opposite_move[1]] = opposite_original_cell;</span>
+<span class="nc" id="L127">                        opposite_piece.setPosition(opposite_position[0], opposite_position[1]);</span>
+<span class="nc" id="L128">                    }</span>
+                    else{
+<span class="fc" id="L130">                        double score = app.getScore();</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">                        if (score &lt; best_score){</span>
+<span class="fc" id="L132">                            best_score = score;</span>
+<span class="fc" id="L133">                            best_move = new int[][] {{position[0],position[1]}, {move[0],move[1]}};</span>
+                        }
+                    }
+
+<span class="fc" id="L137">                    app.board[position[0]][position[1]].setPiece(piece);</span>
+<span class="fc" id="L138">                    app.board[move[0]][move[1]] = original_cell;</span>
+<span class="fc" id="L139">                    piece.setPosition(position[0], position[1]);</span>
+<span class="fc" id="L140">                }</span>
+<span class="fc" id="L141">            }</span>
+<span class="fc" id="L142">            return best_move;</span>
+        }
+    }
+
+    public int[][] random_move(App app){
+<span class="fc" id="L147">        ArrayList&lt;ChessPiece&gt; pieces = app.getPieces(app.turn);</span>
+<span class="fc" id="L148">        ChessPiece piece = pieces.get((int)(Math.random() * pieces.size()));</span>
+<span class="fc" id="L149">        ArrayList&lt;int[]&gt; moves = piece.getLegalMoves(app);</span>
+<span class="fc" id="L150">        int[] move = moves.get((int)(Math.random() * moves.size()));</span>
+<span class="fc" id="L151">        return new int[][] {{piece.getPosition()[0], piece.getPosition()[1]}, {move[0], move[1]}};</span>
+    }
 
     public void move(App app){
-<span class="nc" id="L16">        Random rand = new Random();</span>
-<span class="nc" id="L17">        this.available_pieces = app.getPieces(this.colour);</span>
-<span class="nc" id="L18">        app.reset_last_move();</span>
-<span class="nc bnc" id="L19" title="All 2 branches missed.">        for(int i = 0; i &lt; 100; i++){</span>
-<span class="nc" id="L20">            int index = rand.nextInt(this.available_pieces.size());</span>
-<span class="nc" id="L21">            ChessPiece piece = this.available_pieces.get(index);</span>
-<span class="nc" id="L22">            ArrayList&lt;int[]&gt; available_captures = piece.getAvailableCaptures(app);</span>
-<span class="nc" id="L23">            ArrayList&lt;int[]&gt; illegal_moves = piece.getIllegalMoves(app);</span>
-<span class="nc" id="L24">            available_captures.removeAll(illegal_moves);</span>
-<span class="nc bnc" id="L25" title="All 2 branches missed.">            if(available_captures.size() &gt; 0){</span>
-<span class="nc" id="L26">                int[] available_move = available_captures.get(0);</span>
-<span class="nc" id="L27">                app.select_move(piece.getPosition()[0],piece.getPosition()[1], available_move[0], available_move[1]);</span>
-<span class="nc" id="L28">                piece.move(app, available_move[0], available_move[1]);</span>
-<span class="nc" id="L29">                return;</span>
-            }
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">        if (app.isCheck(app.turn)){</span>
+<span class="nc" id="L156">            ChessPiece king = app.getKing(app.turn);</span>
+<span class="nc" id="L157">            int[] position = king.getPosition();</span>
+<span class="nc" id="L158">            app.board[position[0]][position[1]].setColour(CellColour.RED);</span>
         }
-<span class="nc bnc" id="L32" title="All 2 branches missed.">        for(int i = 0; i &lt; 100; i++){</span>
-<span class="nc" id="L33">            int rand_index = rand.nextInt(this.available_pieces.size());</span>
-<span class="nc" id="L34">            ChessPiece piece = this.available_pieces.get(rand_index);</span>
-<span class="nc" id="L35">            ArrayList&lt;int[]&gt; available_moves = piece.getAvailableMoves(app);</span>
-<span class="nc" id="L36">            ArrayList&lt;int[]&gt; illegal_moves = piece.getIllegalMoves(app);</span>
-<span class="nc" id="L37">            available_moves.removeAll(illegal_moves);</span>
-<span class="nc bnc" id="L38" title="All 2 branches missed.">            if(available_moves.size() &gt; 0){</span>
-<span class="nc" id="L39">                int[] available_move = available_moves.get(0);</span>
-<span class="nc" id="L40">                app.select_move(piece.getPosition()[0],piece.getPosition()[1], available_move[0], available_move[1]);</span>
-<span class="nc" id="L41">                piece.move(app, available_move[0], available_move[1]);</span>
-<span class="nc" id="L42">                return;</span>
-            }
+        
+<span class="fc" id="L161">        int[][] move = new int[2][2];</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        if(this.difficulty == Difficulty.EASY){</span>
+<span class="fc" id="L163">            move = random_move(app);</span>
         }
-<span class="nc" id="L45">    }</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        else if(this.difficulty == Difficulty.MEDIUM){</span>
+<span class="nc" id="L166">            move = minimax(app, 1, app.turn);</span>
+        }
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">        else if(this.difficulty == Difficulty.HARD){</span>
+<span class="fc" id="L169">            move = minimax(app, 2, app.turn);</span>
+        }
+        else{
+<span class="nc" id="L172">            move = random_move(app);</span>
+        }
+<span class="fc" id="L174">        ChessPiece piece = app.board[move[0][0]][move[0][1]].getPiece();</span>
+<span class="fc" id="L175">        app.last_move[0] = new int[] {piece.getPosition()[0],piece.getPosition()[1]};</span>
+<span class="fc" id="L176">        app.last_move[1] = new int[] {move[1][0], move[1][1]};</span>
+<span class="fc" id="L177">        piece.move(app, move[1][0], move[1][1]);</span>
+<span class="fc" id="L178">        return;</span>
+    
+
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

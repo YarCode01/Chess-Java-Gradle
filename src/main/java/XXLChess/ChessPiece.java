@@ -38,16 +38,7 @@ public abstract class ChessPiece {
         }
         return available_captures;
     }
-    public ArrayList<int[]> getAvailableCaptures(App app, ArrayList<int[]> legal_captures, ArrayList<int[]> legal_moves){
-        ArrayList<int[]> available_captures = new ArrayList<int[]>();
-        ArrayList<int[]> available_moves = this.getAvailableMoves(app);
-        for(int[] move: available_moves){
-            if (app.occupied_by_enemy(this, move[0], move[1])){
-                available_captures.add(new int[] {move[0], move[1]});
-            }
-        }
-        return available_captures;
-    }
+
 
     public void select(App app){
         ArrayList<int[]> legal_moves = this.getLegalMoves(app);
@@ -211,20 +202,6 @@ public abstract class ChessPiece {
     public ArrayList<int[]> getLegalMoves(App app){
         ArrayList<int[]> available_moves = getAvailableMoves(app);
         ArrayList<int[]> illegal_moves = getIllegalMoves(app); //new ArrayList<int[]>();
-        ArrayList<int[]> moves = new ArrayList<int[]>();
-        for(int[] move : available_moves){
-            moves.add(new int[] {move[0], move[1]});
-            for(int[] illegal_move : illegal_moves){
-                if (move[0] == illegal_move[0] && move[1] == illegal_move[1]){
-                    moves.remove(moves.size() - 1);
-                    break;
-                }
-            }
-        }
-        return moves;
-    }
-
-    public ArrayList<int[]> getLegalMoves(App app, ArrayList<int[]> available_moves, ArrayList<int[]> illegal_moves){
         ArrayList<int[]> moves = new ArrayList<int[]>();
         for(int[] move : available_moves){
             moves.add(new int[] {move[0], move[1]});
