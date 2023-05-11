@@ -28,9 +28,9 @@ public class Timer {
 
 <span class="fc" id="L29">    }</span>
     public void finish(){
-<span class="fc bfc" id="L31" title="All 2 branches covered.">        if(running){</span>
-<span class="fc" id="L32">            this.elapsed_time = System.currentTimeMillis() - this.start_time;</span>
-<span class="fc" id="L33">            this.time_left -= this.elapsed_time;</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">        if(running){</span>
+<span class="nc" id="L32">            this.elapsed_time = System.currentTimeMillis() - this.start_time;</span>
+<span class="nc" id="L33">            this.time_left -= this.elapsed_time;</span>
         }
 <span class="pc bpc" id="L35" title="1 of 2 branches missed.">        if(time_left &lt; 0){</span>
 <span class="nc" id="L36">            time_left = 0;</span>

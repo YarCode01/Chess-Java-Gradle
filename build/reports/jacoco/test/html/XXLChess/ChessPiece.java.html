@@ -41,20 +41,20 @@ public abstract class ChessPiece {
 
 
     public void select(App app){
-<span class="nc" id="L44">        ArrayList&lt;int[]&gt; legal_moves = this.getLegalMoves(app);</span>
-<span class="nc bnc" id="L45" title="All 2 branches missed.">        for(int[] move : legal_moves){</span>
-<span class="nc bnc" id="L46" title="All 2 branches missed.">            if (app.cell_available(move[0], move[1])) app.select_free_cell(move[0], move[1]);</span>
+<span class="fc" id="L44">        ArrayList&lt;int[]&gt; legal_moves = this.getLegalMoves(app);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        for(int[] move : legal_moves){</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">            if (app.cell_available(move[0], move[1])) app.select_free_cell(move[0], move[1]);</span>
 <span class="nc" id="L47">            else app.select_occupied_cell(move[0], move[1]);</span>
-<span class="nc" id="L48">        }</span>
-<span class="nc" id="L49">    }</span>
+<span class="fc" id="L48">        }</span>
+<span class="fc" id="L49">    }</span>
 
 
     public void move(App app, int new_x, int new_y){
-<span class="fc" id="L53">        app.board[this.x][this.y].setPiece(null);</span>
-<span class="fc" id="L54">        app.board[new_x][new_y].setPiece(this);</span>
-<span class="fc" id="L55">        this.x = new_x;</span>
-<span class="fc" id="L56">        this.y = new_y;</span>
-<span class="fc" id="L57">    }</span>
+<span class="nc" id="L53">        app.board[this.x][this.y].setPiece(null);</span>
+<span class="nc" id="L54">        app.board[new_x][new_y].setPiece(this);</span>
+<span class="nc" id="L55">        this.x = new_x;</span>
+<span class="nc" id="L56">        this.y = new_y;</span>
+<span class="nc" id="L57">    }</span>
 
     public void take(int new_x, int new_y){
 <span class="nc" id="L60">    }</span>
@@ -267,12 +267,12 @@ class Rook extends ChessPiece{
 <span class="fc" id="L267">    }</span>
 
     public void move(App app, int new_x, int new_y){
-<span class="nc" id="L270">        moved = true;</span>
-<span class="nc" id="L271">        app.board[this.x][this.y].setPiece(null);</span>
-<span class="nc" id="L272">        app.board[new_x][new_y].setPiece(this);</span>
-<span class="nc" id="L273">        this.x = new_x;</span>
-<span class="nc" id="L274">        this.y = new_y;</span>
-<span class="nc" id="L275">    } </span>
+<span class="fc" id="L270">        moved = true;</span>
+<span class="fc" id="L271">        app.board[this.x][this.y].setPiece(null);</span>
+<span class="fc" id="L272">        app.board[new_x][new_y].setPiece(this);</span>
+<span class="fc" id="L273">        this.x = new_x;</span>
+<span class="fc" id="L274">        this.y = new_y;</span>
+<span class="fc" id="L275">    } </span>
 
     public ArrayList&lt;int[]&gt; getAvailableMoves(App app){
 <span class="fc" id="L278">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
@@ -364,20 +364,20 @@ class King extends ChessPiece{
 <span class="fc" id="L364">    }</span>
 
     public void move(App app, int new_x, int new_y){
-<span class="nc" id="L367">        moved = true;</span>
-<span class="nc bnc" id="L368" title="All 2 branches missed.">        if(new_x - this.x &gt;= 2){</span>
-<span class="nc" id="L369">            Rook rook = (Rook) app.board[app.BOARD_WIDTH-1][this.y].getPiece();</span>
-<span class="nc" id="L370">            rook.move(app, this.x+1, this.y);</span>
+<span class="fc" id="L367">        moved = true;</span>
+<span class="pc bpc" id="L368" title="1 of 2 branches missed.">        if(new_x - this.x &gt;= 2){</span>
+<span class="fc" id="L369">            Rook rook = (Rook) app.board[app.BOARD_WIDTH-1][this.y].getPiece();</span>
+<span class="fc" id="L370">            rook.move(app, this.x+1, this.y);</span>
         }
-<span class="nc bnc" id="L372" title="All 2 branches missed.">        if(this.x - new_x &gt;= 2){</span>
+<span class="pc bpc" id="L372" title="1 of 2 branches missed.">        if(this.x - new_x &gt;= 2){</span>
 <span class="nc" id="L373">            Rook rook = (Rook) app.board[0][this.y].getPiece();</span>
 <span class="nc" id="L374">            rook.move(app, this.x-1, this.y);</span>
         }
-<span class="nc" id="L376">        app.board[this.x][this.y].setPiece(null);</span>
-<span class="nc" id="L377">        app.board[new_x][new_y].setPiece(this);</span>
-<span class="nc" id="L378">        this.x = new_x;</span>
-<span class="nc" id="L379">        this.y = new_y;</span>
-<span class="nc" id="L380">    }</span>
+<span class="fc" id="L376">        app.board[this.x][this.y].setPiece(null);</span>
+<span class="fc" id="L377">        app.board[new_x][new_y].setPiece(this);</span>
+<span class="fc" id="L378">        this.x = new_x;</span>
+<span class="fc" id="L379">        this.y = new_y;</span>
+<span class="fc" id="L380">    }</span>
 
     public ArrayList&lt;int[]&gt; getAvailableMoves(App app){
 <span class="fc" id="L383">        ArrayList&lt;int[]&gt; available_moves = new ArrayList&lt;int[]&gt;();</span>
@@ -390,10 +390,10 @@ class King extends ChessPiece{
                     }
                 }
             }
-<span class="pc bpc" id="L393" title="1 of 4 branches missed.">            if (app.cell_available(this.x-2, this.y) &amp;&amp; app.cell_available(this.x-1, this.y)){</span>
-<span class="nc bnc" id="L394" title="All 2 branches missed.">                for(int i=this.x-1; i &gt;= 0; i--){</span>
-<span class="nc bnc" id="L395" title="All 4 branches missed.">                    if (app.board[i][this.y].getPiece() instanceof Rook &amp;&amp; !app.board[i][this.y].getPiece().moved){</span>
-<span class="nc" id="L396">                        available_moves.add(new int[] {this.x-2, this.y});</span>
+<span class="fc bfc" id="L393" title="All 4 branches covered.">            if (app.cell_available(this.x-2, this.y) &amp;&amp; app.cell_available(this.x-1, this.y)){</span>
+<span class="fc bfc" id="L394" title="All 2 branches covered.">                for(int i=this.x-1; i &gt;= 0; i--){</span>
+<span class="pc bpc" id="L395" title="1 of 4 branches missed.">                    if (app.board[i][this.y].getPiece() instanceof Rook &amp;&amp; !app.board[i][this.y].getPiece().moved){</span>
+<span class="fc" id="L396">                        available_moves.add(new int[] {this.x-2, this.y});</span>
                     }
                 }
             }

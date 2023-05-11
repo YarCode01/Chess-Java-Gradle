@@ -22,7 +22,7 @@ public class TestAI {
 
     
     @BeforeAll
-    public static void initTest() {
+    public static void initTestAI() {
         app = new App();
         app.noLoop();
         app.configPath = "AITest.json";
@@ -41,6 +41,10 @@ public class TestAI {
     public void testAImove(){
         app.settings();
         app.setup(); 
+        app.turn = PlayerColour.WHITE;
+        app.ai.move(app);
+        app.turn = PlayerColour.BLACK;
+        app.ai = new AI(app, PlayerColour.BLACK, "HARD");
         app.ai.move(app);
     }
 
@@ -48,9 +52,10 @@ public class TestAI {
     @Order(2)
     public void testEasyAI(){
         app.settings();
-        app.configPath = "AITest.json";
+        app.configPath = "config.json";
         app.setup();
         app.noLoop();
+        app.turn = PlayerColour.BLACK;
         app.ai = new AI(app, PlayerColour.BLACK, "EASY");
         app.turn = PlayerColour.BLACK;
         app.ai.move(app);

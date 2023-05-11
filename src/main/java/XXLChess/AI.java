@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 public class AI {
     private PlayerColour colour;
     private ArrayList<ChessPiece> available_pieces;
-    private int i = 0;
     private Difficulty difficulty;
 
     public enum Difficulty{
@@ -146,15 +145,22 @@ public class AI {
 
     public int[][] random_move(App app){
         ArrayList<ChessPiece> pieces = app.getPieces(app.turn);
-        ChessPiece piece = pieces.get((int)(Math.random() * pieces.size()));
-        ArrayList<int[]> moves = piece.getLegalMoves(app);
-        int[] move = moves.get((int)(Math.random() * moves.size()));
-        return new int[][] {{piece.getPosition()[0], piece.getPosition()[1]}, {move[0], move[1]}};
+        int[][] move;
+        for(int i = 0; i < 1000; i++){
+            ChessPiece piece = pieces.get((int)(Math.random() * pieces.size()));
+            ArrayList<int[]> moves = piece.getLegalMoves(app);
+            if (moves.size() > 0){
+                int index = (int)(Math.random() * moves.size());
+                move = new int[][] {{piece.getPosition()[0], piece.getPosition()[1]},{moves.get(index)[0], moves.get(index)[1]}};
+                return move;
+            }
+        }
+        return null;
     }
 
     public void move(App app){
-        if (app.isCheck(app.turn)){
-            ChessPiece king = app.getKing(app.turn);
+        if (app.isCheck(this.colour)){
+            ChessPiece king = app.getKing(this.colour);
             int[] position = king.getPosition();
             app.board[position[0]][position[1]].setColour(CellColour.RED);
         }
@@ -164,10 +170,10 @@ public class AI {
             move = random_move(app);
         }
         else if(this.difficulty == Difficulty.MEDIUM){
-            move = minimax(app, 1, app.turn);
+            move = minimax(app, 1, this.colour);
         }
         else if(this.difficulty == Difficulty.HARD){
-            move = minimax(app, 2, app.turn);
+            move = minimax(app, 2, this.colour);
         }
         else{
             move = random_move(app);

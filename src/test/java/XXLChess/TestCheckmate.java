@@ -24,11 +24,12 @@ public class TestCheckmate {
     @BeforeAll
     public static void initTest() {
         app = new App();
-        app.noLoop();
+        
         app.configPath = "checkmate.json";
         PApplet.runSketch(new String[]{"App"}, app);
         app.settings();
         app.setup();
+        app.noLoop();
     }
 
     @Test

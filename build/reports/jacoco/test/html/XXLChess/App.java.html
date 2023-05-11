@@ -47,7 +47,7 @@ public class App extends PApplet {
     public boolean resigned;
 
 <span class="fc" id="L49">    public App() {</span>
-<span class="fc" id="L50">        this.configPath = &quot;AITest.json&quot;;</span>
+<span class="fc" id="L50">        this.configPath = &quot;config.json&quot;;</span>
 <span class="fc" id="L51">    }</span>
 
     /**
@@ -259,37 +259,37 @@ public class App extends PApplet {
 <span class="fc" id="L259">            timer_black.finish();</span>
 <span class="fc" id="L260">            timer_white.finish();</span>
         }
-<span class="fc bfc" id="L262" title="All 2 branches covered.">        else if (timer_white.getTime() &lt;= 0){</span>
-<span class="fc" id="L263">            fill(250, 0, 0);</span>
-<span class="fc" id="L264">            text(&quot;AI won because of timeout&quot;,120, 360);</span>
-<span class="fc" id="L265">            timer_black.finish();</span>
-<span class="fc" id="L266">            timer_white.finish();</span>
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">        else if (timer_white.getTime() &lt;= 0){</span>
+<span class="nc" id="L263">            fill(250, 0, 0);</span>
+<span class="nc" id="L264">            text(&quot;AI won because of timeout&quot;,120, 360);</span>
+<span class="nc" id="L265">            timer_black.finish();</span>
+<span class="nc" id="L266">            timer_white.finish();</span>
         }
-<span class="fc bfc" id="L268" title="All 2 branches covered.">        else if(isCheckMate(turn)){</span>
-<span class="fc" id="L269">            fill(250, 0, 0);</span>
-<span class="fc" id="L270">            text(&quot;Checkmate&quot;, 200, 360);</span>
+<span class="pc bpc" id="L268" title="1 of 2 branches missed.">        else if(isCheckMate(turn)){</span>
+<span class="nc" id="L269">            fill(250, 0, 0);</span>
+<span class="nc" id="L270">            text(&quot;Checkmate&quot;, 200, 360);</span>
         }
 <span class="fc bfc" id="L272" title="All 2 branches covered.">        else if(turn == ai.getColour()){</span>
-<span class="fc" id="L273">            ai.move(this);</span>
-<span class="fc" id="L274">            ChangeTurn();</span>
+<span class="nc" id="L273">            ai.move(this);</span>
+<span class="nc" id="L274">            ChangeTurn();</span>
         }
         else{
-<span class="pc bpc" id="L277" title="1 of 2 branches missed.">            if (click){</span>
-<span class="nc" id="L278">                text(x_clicked + &quot; &quot; + y_clicked, 700, 360);</span>
-<span class="nc bnc" id="L279" title="All 2 branches missed.">                if(board[x_clicked][y_clicked].getPiece() != null </span>
-<span class="nc bnc" id="L280" title="All 2 branches missed.">                &amp;&amp; board[x_clicked][y_clicked].getPiece().getColour() == turn){</span>
-<span class="nc" id="L281">                    selected_cell = board[x_clicked][y_clicked];</span>
-<span class="nc" id="L282">                    reset_colour();</span>
-<span class="nc" id="L283">                    select_current_piece(x_clicked,y_clicked);</span>
-<span class="nc" id="L284">                    board[x_clicked][y_clicked].getPiece().select(this);</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">            if (click){</span>
+<span class="fc" id="L278">                text(x_clicked + &quot; &quot; + y_clicked, 700, 360);</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">                if(board[x_clicked][y_clicked].getPiece() != null </span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">                &amp;&amp; board[x_clicked][y_clicked].getPiece().getColour() == turn){</span>
+<span class="fc" id="L281">                    selected_cell = board[x_clicked][y_clicked];</span>
+<span class="fc" id="L282">                    reset_colour();</span>
+<span class="fc" id="L283">                    select_current_piece(x_clicked,y_clicked);</span>
+<span class="fc" id="L284">                    board[x_clicked][y_clicked].getPiece().select(this);</span>
                 }
-<span class="nc bnc" id="L286" title="All 6 branches missed.">                else if(board[x_clicked][y_clicked].getColour() == CellColour.LIGHT_BLUE || board[x_clicked][y_clicked].getColour() == CellColour.DARK_BLUE || board[x_clicked][y_clicked].getColour() == CellColour.ORANGE){   </span>
-<span class="nc" id="L287">                        selected_cell.getPiece().move(this, x_clicked, y_clicked);</span>
-<span class="nc" id="L288">                        last_move[0] = null;</span>
-<span class="nc" id="L289">                        last_move[1] = null;</span>
-<span class="nc" id="L290">                        reset_colour();</span>
-<span class="nc" id="L291">                        ChangeTurn();</span>
-<span class="nc" id="L292">                        selected_cell = null;</span>
+<span class="pc bpc" id="L286" title="2 of 6 branches missed.">                else if(board[x_clicked][y_clicked].getColour() == CellColour.LIGHT_BLUE || board[x_clicked][y_clicked].getColour() == CellColour.DARK_BLUE || board[x_clicked][y_clicked].getColour() == CellColour.ORANGE){   </span>
+<span class="fc" id="L287">                        selected_cell.getPiece().move(this, x_clicked, y_clicked);</span>
+<span class="fc" id="L288">                        last_move[0] = null;</span>
+<span class="fc" id="L289">                        last_move[1] = null;</span>
+<span class="fc" id="L290">                        reset_colour();</span>
+<span class="fc" id="L291">                        ChangeTurn();</span>
+<span class="fc" id="L292">                        selected_cell = null;</span>
                     }
                 }
 <span class="fc" id="L295">            click = false;</span>
@@ -308,7 +308,7 @@ public class App extends PApplet {
     }
 
     public void update_time(Timer timer_white, Timer timer_black, PlayerColour turn){
-<span class="fc bfc" id="L311" title="All 6 branches covered.">        if (timer_black.getTime() &lt;= 0 || timer_white.getTime() &lt;= 0 || isCheckMate()){</span>
+<span class="pc bpc" id="L311" title="2 of 6 branches missed.">        if (timer_black.getTime() &lt;= 0 || timer_white.getTime() &lt;= 0 || isCheckMate()){</span>
 <span class="fc" id="L312">            timer_black.finish();</span>
 <span class="fc" id="L313">            timer_white.finish();</span>
         }
@@ -321,7 +321,7 @@ public class App extends PApplet {
             }
         }
         else{
-<span class="pc bpc" id="L324" title="1 of 2 branches missed.">            if(timer_white.isRunning()){</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">            if(timer_white.isRunning()){</span>
 <span class="fc" id="L325">                timer_white.stop();</span>
             }
 <span class="pc bpc" id="L327" title="1 of 2 branches missed.">            if(!timer_black.isRunning()){</span>
@@ -339,7 +339,7 @@ public class App extends PApplet {
 <span class="fc bfc" id="L339" title="All 4 branches covered.">                if (piece != null &amp;&amp; !(piece instanceof King)) {</span>
 <span class="fc" id="L340">                    double value = piece.getValue();</span>
 <span class="fc bfc" id="L341" title="All 2 branches covered.">                    if (piece.getColour() == PlayerColour.WHITE) {</span>
-<span class="pc bpc" id="L342" title="1 of 8 branches missed.">                        if(i &gt;= 3 &amp;&amp; i &lt;= 10 &amp;&amp; j &gt;=3 &amp;&amp; j &lt;= 10){</span>
+<span class="fc bfc" id="L342" title="All 8 branches covered.">                        if(i &gt;= 3 &amp;&amp; i &lt;= 10 &amp;&amp; j &gt;=3 &amp;&amp; j &lt;= 10){</span>
 <span class="fc" id="L343">                            score++;</span>
                         }
 <span class="fc" id="L345">                        score += value;</span>
@@ -358,15 +358,15 @@ public class App extends PApplet {
 <span class="pc bpc" id="L358" title="1 of 2 branches missed.">        if (isCheck(PlayerColour.WHITE)) {</span>
 <span class="nc" id="L359">            score -= 5;</span>
         }
-<span class="pc bpc" id="L361" title="1 of 2 branches missed.">        if (isCheck(PlayerColour.BLACK)) {</span>
-<span class="nc" id="L362">            score += 5;</span>
+<span class="fc bfc" id="L361" title="All 2 branches covered.">        if (isCheck(PlayerColour.BLACK)) {</span>
+<span class="fc" id="L362">            score += 5;</span>
         }
 
 <span class="pc bpc" id="L365" title="1 of 2 branches missed.">        if (isCheckMate(PlayerColour.WHITE)) {</span>
 <span class="nc" id="L366">            score -= 10000;</span>
         }
-<span class="pc bpc" id="L368" title="1 of 2 branches missed.">        if (isCheck(PlayerColour.BLACK)) {</span>
-<span class="nc" id="L369">            score += 10000;</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">        if (isCheck(PlayerColour.BLACK)) {</span>
+<span class="fc" id="L369">            score += 10000;</span>
         }
 <span class="fc" id="L371">        return score;</span>
     }
@@ -381,7 +381,7 @@ public class App extends PApplet {
 <span class="fc" id="L381">        String time = Long.toString(time_white/60) + &quot;:&quot; + seconds;</span>
 <span class="fc" id="L382">        text(time, 675, 600);</span>
 <span class="fc" id="L383">        seconds = Long.toString(time_black%60);</span>
-<span class="pc bpc" id="L384" title="1 of 2 branches missed.">        if(time_black%60 &lt; 10) seconds = &quot;0&quot; + seconds;</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">        if(time_black%60 &lt; 10) seconds = &quot;0&quot; + seconds;</span>
 <span class="fc" id="L385">        time = Long.toString(time_black/60) + &quot;:&quot; + seconds;</span>
 <span class="fc" id="L386">        text(time, 675, 100);</span>
 <span class="fc" id="L387">    }</span>
@@ -519,8 +519,8 @@ public class App extends PApplet {
 <span class="fc" id="L519">    }</span>
 
     private void draw_board(){
-<span class="pc bpc" id="L522" title="1 of 4 branches missed.">        if (last_move[0] != null &amp;&amp; last_move[1] != null){</span>
-<span class="fc" id="L523">            draw_move(last_move[0][0], last_move[0][1], last_move[1][0], last_move[1][1]);</span>
+<span class="pc bpc" id="L522" title="3 of 4 branches missed.">        if (last_move[0] != null &amp;&amp; last_move[1] != null){</span>
+<span class="nc" id="L523">            draw_move(last_move[0][0], last_move[0][1], last_move[1][0], last_move[1][1]);</span>
         }
 
 <span class="fc bfc" id="L526" title="All 2 branches covered.">        if(isCheck()){</span>

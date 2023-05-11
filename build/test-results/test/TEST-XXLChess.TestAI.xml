@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="XXLChess.TestAI" tests="3" skipped="0" failures="0" errors="0" timestamp="2023-05-09T09:32:16" hostname="Yaraslaus-MacBook-Pro.local" time="0.314">
+<testsuite name="XXLChess.TestAI" tests="3" skipped="0" failures="0" errors="0" timestamp="2023-05-10T04:26:04" hostname="Yaraslaus-MacBook-Pro.local" time="0.411">
   <properties/>
-  <testcase name="appStartsAI()" classname="XXLChess.TestAI" time="0.014"/>
-  <testcase name="testAImove()" classname="XXLChess.TestAI" time="0.21"/>
-  <testcase name="testEasyAI()" classname="XXLChess.TestAI" time="0.088"/>
+  <testcase name="appStartsAI()" classname="XXLChess.TestAI" time="0.011"/>
+  <testcase name="testAImove()" classname="XXLChess.TestAI" time="0.315"/>
+  <testcase name="testEasyAI()" classname="XXLChess.TestAI" time="0.083"/>
   <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
+  <system-err><![CDATA[java.lang.NullPointerException
+	at XXLChess.App.isCheck(App.java:401)
+	at XXLChess.App.isLegalMove(App.java:458)
+	at XXLChess.ChessPiece.getIllegalMoves(ChessPiece.java:197)
+	at XXLChess.ChessPiece.getLegalMoves(ChessPiece.java:204)
+	at XXLChess.AI.minimax(AI.java:50)
+	at XXLChess.AI.minimax(AI.java:108)
+	at XXLChess.AI.move(AI.java:176)
+	at XXLChess.App.draw(App.java:273)
+	at processing.core.PApplet.handleDraw(PApplet.java:2426)
+	at processing.awt.PSurfaceAWT$12.callDraw(PSurfaceAWT.java:1557)
+	at processing.core.PSurfaceNone$AnimationThread.run(PSurfaceNone.java:316)
+]]></system-err>
 </testsuite>

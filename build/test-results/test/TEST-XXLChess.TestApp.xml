@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="XXLChess.TestApp" tests="15" skipped="0" failures="0" errors="0" timestamp="2023-05-09T09:32:16" hostname="Yaraslaus-MacBook-Pro.local" time="0.497">
+<testsuite name="XXLChess.TestApp" tests="15" skipped="0" failures="0" errors="0" timestamp="2023-05-10T04:26:05" hostname="Yaraslaus-MacBook-Pro.local" time="0.482">
   <properties/>
-  <testcase name="appStarts()" classname="XXLChess.TestApp" time="0.001"/>
+  <testcase name="appStartsAPP()" classname="XXLChess.TestApp" time="0.0"/>
   <testcase name="getKingWorks()" classname="XXLChess.TestApp" time="0.002"/>
-  <testcase name="timer_created()" classname="XXLChess.TestApp" time="0.0"/>
-  <testcase name="updateTimeWorks()" classname="XXLChess.TestApp" time="0.091"/>
+  <testcase name="timer_created()" classname="XXLChess.TestApp" time="0.001"/>
+  <testcase name="updateTimeWorks()" classname="XXLChess.TestApp" time="0.09"/>
   <testcase name="isLegalMoveWorks()" classname="XXLChess.TestApp" time="0.001"/>
-  <testcase name="reset_colourWorks()" classname="XXLChess.TestApp" time="0.001"/>
+  <testcase name="reset_colourWorks()" classname="XXLChess.TestApp" time="0.0"/>
   <testcase name="changeTurnWorks()" classname="XXLChess.TestApp" time="0.0"/>
-  <testcase name="draw_moveWorks()" classname="XXLChess.TestApp" time="0.0"/>
+  <testcase name="draw_moveWorks()" classname="XXLChess.TestApp" time="0.001"/>
   <testcase name="select_current_pieceWorks()" classname="XXLChess.TestApp" time="0.0"/>
   <testcase name="select_free_cellWorks()" classname="XXLChess.TestApp" time="0.0"/>
   <testcase name="select_occupied_cellWorks()" classname="XXLChess.TestApp" time="0.001"/>
-  <testcase name="display_timeWorks()" classname="XXLChess.TestApp" time="0.111"/>
-  <testcase name="click_works()" classname="XXLChess.TestApp" time="0.114"/>
-  <testcase name="getScoreWorks()" classname="XXLChess.TestApp" time="0.082"/>
-  <testcase name="castlingWorks()" classname="XXLChess.TestApp" time="0.086"/>
+  <testcase name="display_timeWorks()" classname="XXLChess.TestApp" time="0.106"/>
+  <testcase name="click_works()" classname="XXLChess.TestApp" time="0.102"/>
+  <testcase name="getScoreWorks()" classname="XXLChess.TestApp" time="0.083"/>
+  <testcase name="castlingWorks()" classname="XXLChess.TestApp" time="0.087"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

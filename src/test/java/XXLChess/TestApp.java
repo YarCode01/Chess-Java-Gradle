@@ -32,7 +32,7 @@ public class TestApp {
 
     @Test
     @Order(1)
-    public void appStarts(){
+    public void appStartsAPP(){
         assertNotNull(app);
     }
 
