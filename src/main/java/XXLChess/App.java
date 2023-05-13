@@ -45,6 +45,8 @@ public class App extends PApplet {
     public Timer timer_white, timer_black;
     public AI ai;
     public boolean resigned;
+    public PlayerColour colour_of_player;
+    public PlayerColour colour_of_cpu;
 
     public App() {
         this.configPath = "config.json";
@@ -190,8 +192,8 @@ public class App extends PApplet {
         int seconds_cpu = conf.getJSONObject("time_controls").getJSONObject("cpu").getInt("seconds");
         int increment_cpu = conf.getJSONObject("time_controls").getJSONObject("cpu").getInt("increment");
 
-        PlayerColour colour_of_player = ((conf.getString("player_colour").equals("white")) ? PlayerColour.WHITE : PlayerColour.BLACK);
-        PlayerColour colour_of_cpu = ((conf.getString("player_colour").equals("white")) ? PlayerColour.BLACK : PlayerColour.WHITE);
+        colour_of_player = ((conf.getString("player_colour").equals("white")) ? PlayerColour.WHITE : PlayerColour.BLACK);
+        colour_of_cpu = ((conf.getString("player_colour").equals("white")) ? PlayerColour.BLACK : PlayerColour.WHITE);
 
         if (colour_of_player == PlayerColour.WHITE){
             timer_white = new Timer((int) seconds_player/60, seconds_player%60, increment_player);
@@ -253,21 +255,38 @@ public class App extends PApplet {
         }
         update_time(timer_white, timer_black, turn);
         display_time(timer_white, timer_black, turn);
-        if(timer_black.getTime() <= 0){
+        if(timer_black.getTime() <= 0 ){
             fill(250, 0, 0);
-            text("Player won because of timeout",120, 360);
+            if(colour_of_player == PlayerColour.BLACK)
+                text("You lost on time",140, 360);
+            else
+                text("You won on time",140, 360);
             timer_black.finish();
             timer_white.finish();
         }
         else if (timer_white.getTime() <= 0){
             fill(250, 0, 0);
-            text("AI won because of timeout",120, 360);
+            if(colour_of_player == PlayerColour.WHITE)
+                text("You lost on time",140, 360);
+            else
+                text("You won on time",140, 360);
             timer_black.finish();
             timer_white.finish();
         }
-        else if(isCheckMate(turn)){
+        else if(isCheckMate(PlayerColour.WHITE) || isCheckMate(PlayerColour.BLACK)){
             fill(250, 0, 0);
-            text("Checkmate", 200, 360);
+            if (isCheckMate(PlayerColour.WHITE)){
+                if(colour_of_player == PlayerColour.WHITE)
+                    text("You lost on checkmate",120, 360);
+                else
+                    text("You won on checkmate",120, 360);
+            }
+            else{
+                if(colour_of_player == PlayerColour.BLACK)
+                    text("You lost on checkmate",120, 360);
+                else
+                    text("You won on checkmate",120, 360);
+            }
         }
         else if(turn == ai.getColour()){
             ai.move(this);
@@ -304,11 +323,12 @@ public class App extends PApplet {
                     return board[i][j].getPiece();
             }
         }
+        System.out.println("it's null");
         return null;
     }
 
     public void update_time(Timer timer_white, Timer timer_black, PlayerColour turn){
-        if (timer_black.getTime() <= 0 || timer_white.getTime() <= 0 || isCheckMate()){
+        if (timer_black.getTime() <= 0 || timer_white.getTime() <= 0 || isCheckMate(PlayerColour.WHITE) || isCheckMate(PlayerColour.BLACK)){
             timer_black.finish();
             timer_white.finish();
         }
@@ -365,7 +385,7 @@ public class App extends PApplet {
         if (isCheckMate(PlayerColour.WHITE)) {
             score -= 10000;
         }
-        if (isCheck(PlayerColour.BLACK)) {
+        if (isCheckMate(PlayerColour.BLACK)) {
             score += 10000;
         }
         return score;
@@ -390,7 +410,7 @@ public class App extends PApplet {
         return getKing(this.board, colour);
     }
     public boolean isCheck(PlayerColour turn){
-        ChessPiece king = getKing(board, turn);
+        ChessPiece king = getKing(this.board, turn);
         ArrayList<ChessPiece> opposite_pieces;
         if (turn == PlayerColour.WHITE){
             opposite_pieces = getPieces(board, PlayerColour.BLACK);
@@ -535,7 +555,7 @@ public class App extends PApplet {
             ArrayList<ChessPiece> pieces= getPiecesCheckmate();
             for(ChessPiece piece : pieces){
                 int[] position = piece.getPosition();
-                board[position[0]][position[1]].setColour(CellColour.RED);
+                board[position[0]][position[1]].setColour(CellColour.ORANGE);
             }
         }
 

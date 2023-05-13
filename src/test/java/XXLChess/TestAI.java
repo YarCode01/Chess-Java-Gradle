@@ -32,24 +32,31 @@ public class TestAI {
     }
 
     @Test
-    @Order(1)
     public void appStartsAI(){
         assertNotNull(app);
     }
     @Test
-    @Order(2)
     public void testAImove(){
         app.settings();
         app.setup(); 
-        app.turn = PlayerColour.WHITE;
-        app.ai.move(app);
-        app.turn = PlayerColour.BLACK;
-        app.ai = new AI(app, PlayerColour.BLACK, "HARD");
+        app.noLoop();
         app.ai.move(app);
     }
 
     @Test
-    @Order(2)
+    public void testAImoveBlack(){
+        app.settings();
+        app.setup(); 
+        app.noLoop();
+        app.colour_of_cpu = PlayerColour.BLACK;
+        app.colour_of_player = PlayerColour.WHITE;
+        app.turn = PlayerColour.BLACK;
+        AI ai = new AI(app, PlayerColour.BLACK, "HARD");
+        app.ai = ai;
+        app.ai.move(app);
+    }
+
+    @Test
     public void testEasyAI(){
         app.settings();
         app.configPath = "config.json";

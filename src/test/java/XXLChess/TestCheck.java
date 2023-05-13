@@ -22,7 +22,7 @@ public class TestCheck {
 
     
     @BeforeAll
-    public static void initTest() {
+    public static void initTestCheck() {
         app = new App();
         app.noLoop();
         app.configPath = "check.json";
@@ -37,13 +37,6 @@ public class TestCheck {
         assertNotNull(app);
         app.draw();
     }
-    // @Test
-    // @Order(2)
-    // public void testChangeTurn(){
-    //     app.ChangeTurn();
-    //     app.draw();
-    // }
-
 
 
 

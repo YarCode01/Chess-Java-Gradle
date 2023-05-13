@@ -49,10 +49,14 @@ public class AI {
             for(ChessPiece piece : pieces){
                 ArrayList<int[]> moves = piece.getLegalMoves(app);
                 for (int[] move : moves){
+                    if(app.board[move[0]][move[1]].getPiece() instanceof King && app.board[move[0]][move[1]].getPiece().getColour() == PlayerColour.BLACK){
+                        continue;
+                    }
                     Cell original_cell = new Cell(app.board[move[0]][move[1]].getColour(), app.board[move[0]][move[1]].getPiece());
                     int[] position = piece.getPosition();
                     app.board[position[0]][position[1]].setPiece(null);
                     app.board[move[0]][move[1]].setPiece(piece);
+                    System.out.println("Piece: " + piece + " Position: " + position[0] + " " + position[1] + " Move: " + move[0] + " " + move[1]);
                     piece.setPosition(move[0],move[1]);
                     int[][] opposite_best_move = minimax(app, depth - 1, PlayerColour.BLACK);
                     if (opposite_best_move != null){
@@ -99,12 +103,15 @@ public class AI {
             for(ChessPiece piece : pieces){
                 ArrayList<int[]> moves = piece.getLegalMoves(app);
                 for (int[] move : moves){
-
+                    if(app.board[move[0]][move[1]].getPiece() instanceof King && app.board[move[0]][move[1]].getPiece().getColour() == PlayerColour.WHITE){
+                        continue;
+                    }
                     Cell original_cell = new Cell(app.board[move[0]][move[1]].getColour(), app.board[move[0]][move[1]].getPiece());
                     int[] position = piece.getPosition();
                     app.board[position[0]][position[1]].setPiece(null);
                     app.board[move[0]][move[1]].setPiece(piece);
                     piece.setPosition(move[0],move[1]);
+                    System.out.println("move: " + move[0] + " " + move[1] + " " + piece.getPosition()[0] + " " + piece.getPosition()[1] + " " + piece.getColour());
                     int[][] opposite_best_move = minimax(app, depth - 1, PlayerColour.WHITE);
                     if (opposite_best_move != null){
                         int[] opposite_position = opposite_best_move[0];
@@ -159,8 +166,8 @@ public class AI {
     }
 
     public void move(App app){
-        if (app.isCheck(this.colour)){
-            ChessPiece king = app.getKing(this.colour);
+        if (app.isCheck(app.turn)){
+            ChessPiece king = app.getKing(app.turn);
             int[] position = king.getPosition();
             app.board[position[0]][position[1]].setColour(CellColour.RED);
         }

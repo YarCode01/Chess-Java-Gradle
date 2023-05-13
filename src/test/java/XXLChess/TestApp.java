@@ -22,7 +22,7 @@ public class TestApp {
 
     
     @BeforeAll
-    public static void initTest() {
+    public static void initTestApp() {
         app = new App();
         app.noLoop();
         PApplet.runSketch(new String[]{"App"}, app);
@@ -60,10 +60,11 @@ public class TestApp {
         assertTrue(app.timer_black.isRunning());
         assertFalse(app.timer_white.isRunning());
 
-        app.update_time( app.timer_white, app.timer_black, PlayerColour.WHITE);
+        app.update_time(app.timer_white, app.timer_black, PlayerColour.WHITE);
         assertTrue(app.timer_white.isRunning());
         assertFalse(app.timer_black.isRunning());
 
+        
         app.timer_white = new Timer(0,0,0);
 
         app.timer_black = new Timer(0,0,0);
